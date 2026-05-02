@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="light-content">
 <meta name="apple-mobile-web-app-title" content="Harlem Shred">
@@ -1286,7 +1287,7 @@ function setPillCount(key) {
 
 function setPillCountPrompt(key) {
   const name = key === 'teso' ? 'Tesofensine' : 'L-Tyrosine';
-  const val = parseInt(prompt(\`How many \${name} pills do you have?\`));
+  const val = parseInt(prompt('How many ' + name + ' pills do you have?'));
   if (isNaN(val) || val < 0) return;
   state.inventory[key].pills = val;
   renderPills(); saveToSupabase();
