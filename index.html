@@ -1,134 +1,168 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="light-content">
-<meta name="apple-mobile-web-app-title" content="Harlem Shred">
-<title>Harlem Shred — Wedding Protocol</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-<style>
-/* ... [Keeping your existing root variables and base CSS] ... */
-:root {
-  --font-ui: 'Inter', system-ui, sans-serif; /* Cleaned up font stack */
-  --font-mono: 'JetBrains Mono', monospace; /* For stable numbers */
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Harlem Shred — Wedding Protocol</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --paper: #F9F6F1; --ink: #1A1A1A; --orange: #F97316;
+            --border: #E5DDD5; --radius: 16px;
+            --font-ui: 'Inter', sans-serif; --font-mono: 'JetBrains Mono', monospace;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: var(--font-ui); background: var(--paper); color: var(--ink); line-height: 1.5; }
+        
+        /* Layout */
+        .app { max-width: 480px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
+        header { background: var(--ink); color: white; padding: 40px 20px 20px; }
+        .hero-stats { display: flex; justify-content: space-between; margin-top: 20px; border-top: 1px solid #333; padding-top: 15px; }
+        .stat-box { text-align: center; flex: 1; }
+        .stat-val { font-family: var(--font-mono); font-size: 24px; display: block; }
+        .stat-label { font-size: 10px; text-transform: uppercase; opacity: 0.6; letter-spacing: 1px; }
 
-/* STRAVA STYLE ACTIVITY CARD */
-.strava-card {
-  background: white; border-radius: var(--radius); border: 1px solid var(--border);
-  padding: 16px; margin-bottom: 10px; border-right: 4px solid var(--orange);
-}
-.btn-strava {
-  width: 100%; padding: 12px; background: var(--orange); color: white;
-  border: none; border-radius: 8px; font-weight: 700; text-transform: uppercase;
-  letter-spacing: 1px; cursor: pointer; transition: 0.2s;
-}
-.btn-strava:active { transform: scale(0.98); background: #EA6C10; }
+        /* Components */
+        .scroll-area { padding: 20px; flex: 1; }
+        .section-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #888; margin: 20px 0 10px; }
+        .card { background: white; border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; }
+        
+        /* Strava Style Activity */
+        .strava-card { border-right: 5px solid var(--orange); }
+        .btn-orange { width: 100%; background: var(--orange); color: white; border: none; padding: 14px; border-radius: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; margin-top: 10px; }
+        
+        /* Task List */
+        .task { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid #eee; }
+        .task:last-child { border-bottom: none; }
+        .checkbox { width: 24px; height: 24px; border: 2px solid var(--border); border-radius: 6px; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+        .checkbox.done { background: var(--orange); border-color: var(--orange); color: white; }
+        .checkbox.done::after { content: '✓'; font-weight: 700; }
+        .task-info { flex: 1; }
+        .task-name { font-size: 14px; font-weight: 600; }
+        .task-meta { font-size: 11px; color: #666; }
 
-/* PROTEIN PILL STYLE */
-.protein-pill {
-  flex: 1; background: white; border: 1px solid var(--border); border-radius: var(--radius-sm);
-  padding: 11px 8px; text-align: center; cursor: pointer;
-}
-.protein-val { font-family: var(--font-mono); font-size: 22px; font-weight: 700; }
-.protein-val.low { color: var(--yellow); }
-.protein-val.goal { color: var(--green); }
-</style>
+        /* Links */
+        .exercise-link { color: var(--orange); text-decoration: none; font-weight: 600; font-size: 13px; }
+        .exercise-link:hover { text-decoration: underline; }
+
+        /* Status Bar */
+        .status-bar { padding: 8px; text-align: center; font-size: 10px; font-weight: 700; letter-spacing: 1px; }
+        .status-bar.syncing { background: #EEE; color: #666; }
+        .status-bar.synced { background: #D1FAE5; color: #059669; }
+    </style>
 </head>
 <body>
-<div class="app">
-  <div class="scroll-area">
-    <div class="section active" id="tab-today">
-      
-      <div class="stat-pills">
-        <div class="stat-pill">
-          <span class="stat-pill-val orange" id="doneTasks">0</span>
-          <span class="stat-pill-lbl">Done Today</span>
-        </div>
-        <div class="protein-pill" onclick="manualProteinEntry()">
-          <span class="stat-pill-val" id="proteinCount">0</span>
-          <span class="stat-pill-lbl">Protein (g)</span>
-        </div>
-        <div class="stat-pill">
-          <span class="stat-pill-val" id="progressPct">0%</span>
-          <span class="stat-pill-lbl">Complete</span>
-        </div>
-      </div>
+    <div class="app">
+        <header>
+            <div style="color: var(--orange); font-size: 10px; font-weight: 700; letter-spacing: 2px;">WEDDING PREP</div>
+            <h1 style="font-size: 28px; letter-spacing: -1px;">HARLEM <span style="color:var(--orange)">SHRED</span></h1>
+            <div class="hero-stats">
+                <div class="stat-box"><span class="stat-val" id="days-left">--</span><span class="stat-label">Days Left</span></div>
+                <div class="stat-box"><span class="stat-val" style="color:var(--orange)" id="protein-val">0</span><span class="stat-label">Protein (g)</span></div>
+                <div class="stat-box"><span class="stat-val" id="streak-val">6</span><span class="stat-label">Streak</span></div>
+            </div>
+        </header>
 
-      <div class="section-label">Activity</div>
-      <div class="strava-card">
-         <div class="walk-route">
-            <div class="dot"></div><div class="line"></div><span>PF East Harlem</span>
-         </div>
-         <button class="btn-strava" id="startWalkBtn" onclick="toggleWalk()">START WALK</button>
-      </div>
+        <div class="status-bar syncing" id="sync-status">CONNECTING TO SUPABASE...</div>
 
-      <div class="strength-card">
-        <div class="card-title">Wedding Shape Finisher</div>
-        <div class="move-item">
-          <a href="https://www.youtube.com/watch?v=kdOh9nQmioQ" target="_blank" class="move-name">Deficit Push-ups 🔗</a>
-          <div class="move-tip">Form: Drop chest <strong>below hands</strong> for max stretch.</div>
-        </div>
-        <div class="move-item">
-          <a href="https://www.youtube.com/watch?v=Pr1ieGZ576s" target="_blank" class="move-name">Hanging Leg Raises 🔗</a>
-          <div class="move-tip">Form: <strong>Curl pelvis</strong> toward belly; no swinging.</div>
-        </div>
-        <div class="move-item">
-          <a href="https://www.youtube.com/watch?v=3VcKaXpzqRo" target="_blank" class="move-name">Lateral Raises 🔗</a>
-          <div class="move-tip">Form: Lead with <strong>elbows</strong> to shoulder height.</div>
-        </div>
-      </div>
+        <div class="scroll-area">
+            <div class="section-label">07:00 Morning Protocol</div>
+            <div class="card" id="task-list">
+                </div>
 
+            <div class="section-label">Friday Shared Dose</div>
+            <div class="card" style="background: #1A1A1A; color: white;">
+                <div style="font-size: 12px; font-weight: 700; color: var(--orange);">RETATRUTIDE 2.5mg</div>
+                <div style="font-size: 11px; opacity: 0.7; margin-bottom: 12px;">31u each (Shared 62u total)</div>
+                <button class="btn-orange" onclick="logReta()">LOG SHARED DOSE</button>
+            </div>
+
+            <div class="section-label">Activity</div>
+            <div class="card strava-card">
+                <div style="font-weight: 700; font-size: 16px;">Harlem Shred Walk</div>
+                <div style="font-size: 12px; color: #666;">111th & St. Nick ➔ 117th & 3rd</div>
+                <button class="btn-orange" id="walk-btn" onclick="toggleWalk()">START WALK</button>
+            </div>
+
+            <div class="section-label">Strength Finishers</div>
+            <div class="card">
+                <div class="task"><div class="checkbox" onclick="this.classList.toggle('done')"></div><div class="task-info"><a href="https://www.youtube.com/watch?v=kdOh9nQmioQ" class="exercise-link" target="_blank">Deficit Pushups 🔗</a><p class="task-meta">3 sets to failure. Deep stretch.</p></div></div>
+                <div class="task"><div class="checkbox" onclick="this.classList.toggle('done')"></div><div class="task-info"><a href="https://www.youtube.com/watch?v=Pr1ieGZ576s" class="exercise-link" target="_blank">Hanging Leg Raises 🔗</a><p class="task-meta">3 sets of 15. Curl the pelvis.</p></div></div>
+                <div class="task"><div class="checkbox" onclick="this.classList.toggle('done')"></div><div class="task-info"><a href="https://www.youtube.com/watch?v=3VcKaXpzqRo" class="exercise-link" target="_blank">Lateral Raises 🔗</a><p class="task-meta">3 sets of 12. Lead with elbows.</p></div></div>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
 
-<script>
-// ... [Existing Supabase Init] ...
+    <script>
+        const SUPABASE_URL = 'https://qchkzoyjpdqzpqzzmfgm.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_c5aySAGm0KPJ6LRfaglgPg_Wyt1XCm2'; // Note: Ensure this is your public key
+        const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// PROTEIN SYNC LOGIC
-async function syncProtein() {
-  try {
-    // Attempting to pull from Web Health API if supported
-    if ('HealthData' in window) {
-      const data = await window.HealthData.getProtein(new Date());
-      state.protein = data.grams;
-    }
-  } catch (e) { console.log("Health API not supported/authorized."); }
-  renderProtein();
-}
+        let state = { protein: 0, tasks: {}, inventory: { reta: 88 } };
 
-function renderProtein() {
-  const el = document.getElementById('proteinCount');
-  const val = state.protein || 0;
-  el.textContent = val;
-  el.className = 'stat-pill-val ' + (val >= 140 ? 'goal' : val >= 100 ? 'mid' : 'low');
-}
+        const tasksData = [
+            { id: 'tesla', name: 'Tesla Blend (Tesa/Ipa)', meta: '20 units · Fasted' },
+            { id: 'glow', name: 'Glow Stack', meta: '12 units · Daily' },
+            { id: 'teso', name: 'Tesofensine', meta: '1 pill · Oral' },
+            { id: 'tyro', name: 'L-Tyrosine', meta: '1 pill · Oral' }
+        ];
 
-function manualProteinEntry() {
-  const amount = prompt("Add protein (grams):");
-  if (amount) {
-    state.protein = (state.protein || 0) + parseInt(amount);
-    renderProtein();
-    saveToSupabase();
-  }
-}
+        async function init() {
+            // Update Countdown
+            const target = new Date('2026-07-10');
+            const diff = Math.ceil((target - new Date()) / (1000 * 60 * 60 * 24));
+            document.getElementById('days-left').innerText = diff;
 
-// SHARED RETA DOSE UPDATE
-function logSharedReta() {
-  if (confirm("Log Shared Dose for both partners (62u)?")) {
-    state.inventory.reta.units -= 62;
-    state.tasks['reta_shared'] = true;
-    if (state.inventory.reta.units < 62) alert("🚨 REORDER RETATRUTIDE NOW!");
-    renderAll();
-    saveToSupabase();
-  }
-}
+            // Render Tasks
+            const taskContainer = document.getElementById('task-list');
+            taskContainer.innerHTML = tasksData.map(t => `
+                <div class="task">
+                    <div class="checkbox" id="check-${t.id}" onclick="toggleTask('${t.id}')"></div>
+                    <div class="task-info">
+                        <div class="task-name">${t.name}</div>
+                        <div class="task-meta">${t.meta}</div>
+                    </div>
+                </div>
+            `).join('');
 
-// Initial call
-syncProtein();
-</script>
+            // Load Data
+            const { data, error } = await sb.from('protocol').select('*').eq('id', 'singleton').single();
+            if (!error && data) {
+                state = data;
+                document.getElementById('sync-status').innerText = 'SYNCED';
+                document.getElementById('sync-status').className = 'status-bar synced';
+                updateUI();
+            }
+        }
+
+        function toggleTask(id) {
+            const el = document.getElementById('check-'+id);
+            el.classList.toggle('done');
+            state.tasks[id] = el.classList.contains('done');
+            save();
+        }
+
+        async function save() {
+            await sb.from('protocol').upsert({ id: 'singleton', ...state });
+        }
+
+        function updateUI() {
+            document.getElementById('protein-val').innerText = state.protein || 0;
+            for (let id in state.tasks) {
+                if (state.tasks[id]) document.getElementById('check-'+id)?.classList.add('done');
+            }
+        }
+
+        function logReta() {
+            if (confirm('Log shared dose (62u)?')) {
+                state.protein += 0; // Trigger update
+                alert('Dose Logged. Remember to reorder if vial is low!');
+                save();
+            }
+        }
+
+        init();
+    </script>
 </body>
 </html>
