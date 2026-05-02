@@ -331,8 +331,8 @@ body{font-family:'DM Sans',sans-serif;color:#F8FAFC;display:flex;flex-direction:
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const SUPABASE_URL = 'https://qchkzoyjpdqzpqzzmfgm.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFjaGt6b3lqcGRxenBxenptZmdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2OTQzMTEsImV4cCI6MjA5MzI3MDMxMX0.46bOICYq8PoGSfL0qFC9VghGtSg2BPBn6MvDUX8OyTs';
+const SUPABASE_URL = 'https://yhcuhurqappqyijpvblh.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InloY3VodXJxYXBwcXlpanB2YmxoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2OTY3MjcsImV4cCI6MjA5MzI3MjcyN30.XR8TKYcKpqIAWcGovQpZ6VfZJkPqM7pW6XVS0GyoLeE';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let state = {
@@ -386,8 +386,16 @@ function setSyncStatus(status, msg) {
 async function loadFromSupabase() {
   setSyncStatus('syncing', 'LOADING...');
   try {
-    const { data, error } = await sb.from('protocol').select('*').eq('id', 'singleton').single();
+    const { data, error } = await sb.from('protocol').select('*').eq('id', 'singleton').maybeSingle();
     if (error) throw error;
+    if (!data) {
+      // Row doesn't exist yet — create it
+      await saveToSupabase(true);
+      setSyncStatus('synced', 'SYNCED');
+      renderAll();
+      subscribeRealtime();
+      return;
+    }
     const today = getToday();
     if (data.last_day !== today) {
       state.tasks = {}; state.sick_day = false; state.skip_inject = false;
