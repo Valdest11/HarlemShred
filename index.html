@@ -520,7 +520,7 @@ body{font-family:var(--font-ui);color:var(--ink);display:flex;flex-direction:col
   </div><!-- end scroll-area -->
 </div><!-- end app -->
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
 <script>
 // ── SUPABASE ──────────────────────────────────────────────────────────────────
 const SUPABASE_URL = 'https://qchkzoyjpdqzpqzzmfgm.supabase.co';
@@ -636,36 +636,69 @@ function setSyncStatus(status, msg) {
 async function loadFromSupabase() {
   setSyncStatus('syncing', 'LOADING...');
   try {
-    const { data, error } = await sb.from('protocol').select('*').eq('id','singleton').single();
+    const { data, error } = await sb.from('protocol').select('*').eq('id','singleton').maybeSingle();
+
+    // maybeSingle returns null data (not an error) when row doesn't exist
     if (error) throw error;
+
     const today = getToday();
-    if (data.last_day !== today) {
+
+    if (!data) {
+      // First run — no row exists yet, save defaults
+      state.last_day = today;
+      await saveToSupabase();
+    } else if (data.last_day !== today) {
+      // New day — reset tasks/timer but keep inventory
       state.tasks = {};
       state.timer_end = null;
+      state.walk_active_since = null;
+      state.protein_end = null;
       state.last_day = today;
-      state.inventory = data.inventory || state.inventory;
-      state.partner_log = data.partner_log || [];
-      state.walk_active_since = data.walk_active_since || null;
+      state.inventory = mergeInventory(data.inventory);
       await saveToSupabase();
     } else {
-      state.tasks       = data.tasks       || {};
-      state.inventory   = data.inventory   || state.inventory;
-      state.timer_end   = data.timer_end   || null;
-      state.last_day    = data.last_day    || today;
-      state.partner_log = data.partner_log || [];
+      state.tasks             = data.tasks             || {};
+      state.inventory         = mergeInventory(data.inventory);
+      state.timer_end         = data.timer_end         || null;
+      state.last_day          = data.last_day          || today;
       state.walk_active_since = data.walk_active_since || null;
+      state.protein_end       = data.protein_end       || null;
     }
+
     setSyncStatus('synced', 'SYNCED');
     renderAll();
     subscribeRealtime();
+
     if (state.timer_end && Date.now() < state.timer_end) {
       timerInterval = setInterval(renderTimer, 1000);
     }
+    if (state.walk_active_since) {
+      walkTimerInterval = setInterval(tickWalkTimer, 1000);
+    }
+    if (state.protein_end && Date.now() < state.protein_end) {
+      proteinInterval = setInterval(() => tickProtein(state.protein_end), 1000);
+      tickProtein(state.protein_end);
+    }
+
   } catch(e) {
-    setSyncStatus('error', 'SYNC ERROR — CHECK CONNECTION');
-    console.error(e);
+    setSyncStatus('error', 'ERROR: ' + (e.message || JSON.stringify(e)));
+    console.error('Supabase load error:', e);
     renderAll();
   }
+}
+
+// Merge incoming inventory with local defaults so new keys (teso, tyro, etc.) are never lost
+function mergeInventory(remote) {
+  if (!remote) return state.inventory;
+  const merged = JSON.parse(JSON.stringify(state.inventory)); // deep clone defaults
+  for (const key of Object.keys(remote)) {
+    if (merged[key]) {
+      Object.assign(merged[key], remote[key]);
+    } else {
+      merged[key] = remote[key];
+    }
+  }
+  return merged;
 }
 
 // ── SAVE ──────────────────────────────────────────────────────────────────────
@@ -681,8 +714,8 @@ async function saveToSupabase() {
         inventory: state.inventory,
         timer_end: state.timer_end,
         last_day: state.last_day,
-        partner_log: state.partner_log,
         walk_active_since: state.walk_active_since,
+        protein_end: state.protein_end,
         updated_at: new Date().toISOString()
       });
       if (error) throw error;
@@ -1312,16 +1345,7 @@ renderAll();
 loadFromSupabase();
 setInterval(renderCountdown, 60000);
 
-// Resume walk timer if mid-walk
-if (state.walk_active_since) {
-  walkTimerInterval = setInterval(tickWalkTimer, 1000);
-}
-
-// Resume protein timer if still counting
-if (state.protein_end && Date.now() < state.protein_end) {
-  proteinInterval = setInterval(() => tickProtein(state.protein_end), 1000);
-  tickProtein(state.protein_end);
-}
+// Timers resumed inside loadFromSupabase after state is hydrated
 </script>
 </body>
 </html>
