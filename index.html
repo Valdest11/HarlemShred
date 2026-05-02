@@ -4,529 +4,1088 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="light-content">
 <meta name="apple-mobile-web-app-title" content="Harlem Shred">
 <title>Harlem Shred — Wedding Protocol</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
-  --orange:#F97316;--orange-dark:#C2410C;
-  --indigo:#4F46E5;--indigo-light:#C7D2FE;
-  --slate:#0F172A;--slate-mid:#334155;--slate-light:#94A3B8;
-  --green:#10B981;--red:#EF4444;--yellow:#F59E0B;
-  --card:#1E293B;--border:#334155;
-  --radius:12px;--radius-sm:8px;
-  --safe-top:env(safe-area-inset-top,0px);
-  --safe-bottom:env(safe-area-inset-bottom,0px);
+  --paper:#F9F6F1;
+  --paper-dark:#F0EBE3;
+  --ink:#1A1A1A;
+  --ink-mid:#4A4A4A;
+  --ink-light:#8A8A8A;
+  --ink-ghost:#C8C3BB;
+  --orange:#F97316;
+  --orange-light:#FEE2CC;
+  --indigo:#4F46E5;
+  --indigo-light:#EEF0FF;
+  --green:#059669;
+  --green-light:#D1FAE5;
+  --red:#DC2626;
+  --red-light:#FEE2E2;
+  --yellow:#D97706;
+  --yellow-light:#FEF3C7;
+  --border:#E5DDD5;
+  --radius:16px;
+  --radius-sm:10px;
+  --font-ui:'Inter',system-ui,sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
-html,body{height:100%;overflow:hidden;background:var(--slate)}
-body{font-family:'DM Sans',sans-serif;color:#F8FAFC;display:flex;flex-direction:column}
-.app{display:flex;flex-direction:column;height:100%;max-width:480px;margin:0 auto;width:100%}
-.header{background:#0F172A;padding:calc(12px + var(--safe-top)) 16px 0;border-bottom:1px solid var(--border);flex-shrink:0}
-.header-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
-.brand{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;color:var(--orange);line-height:1}
-.brand-sub{font-size:10px;color:var(--slate-light);letter-spacing:1.5px;margin-top:1px}
-.countdown-pill{background:var(--orange);color:white;padding:5px 12px;border-radius:20px;text-align:center;min-width:80px}
-.countdown-pill .days{font-family:'Bebas Neue',sans-serif;font-size:26px;display:block;line-height:1}
-.date-sub{font-size:9px;opacity:0.85;letter-spacing:1px;display:block}
-.tabs{display:flex;margin-top:2px}
-.tab{flex:1;padding:10px 4px;text-align:center;font-size:11px;font-weight:500;color:var(--slate-light);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s;letter-spacing:0.5px;user-select:none}
-.tab.active{color:var(--orange);border-bottom-color:var(--orange)}
-.sync-bar{display:flex;align-items:center;justify-content:center;gap:6px;padding:5px;font-size:10px;letter-spacing:0.5px;flex-shrink:0;transition:all 0.3s}
-.sync-bar.synced{background:#0F2A1E;color:#10B981}
-.sync-bar.syncing{background:#1A1A2E;color:#818CF8}
-.sync-bar.error{background:#2A0F0F;color:#EF4444}
-.sync-dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0}
+html,body{height:100%;overflow:hidden;background:var(--paper)}
+body{font-family:var(--font-ui);color:var(--ink);display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
+.app{display:flex;flex-direction:column;height:100%;max-width:480px;margin:0 auto;width:100%;background:var(--paper)}
+
+/* ── HEADER ── */
+.header{
+  background:var(--ink);
+  padding:calc(12px + var(--safe-top)) 18px 0;
+  flex-shrink:0;
+  position:relative;
+  overflow:hidden;
+}
+.header::before{
+  content:'';position:absolute;top:-40px;right:-40px;width:180px;height:180px;
+  background:radial-gradient(circle, rgba(249,115,22,0.12) 0%, transparent 70%);
+  pointer-events:none;
+}
+.header-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.brand-lockup{}
+.brand{font-family:var(--font-ui);font-size:10px;font-weight:500;letter-spacing:3px;color:var(--orange);text-transform:uppercase;opacity:0.8}
+.brand-title{font-family:var(--font-ui);font-size:17px;font-weight:700;color:white;line-height:1.2;margin-top:3px;letter-spacing:1.5px;text-transform:uppercase}
+.brand-title span{color:var(--orange)}
+
+/* Hero stats — Strava style: clean mono numbers, tight labels */
+.hero-stats{display:flex;gap:10px;align-items:center}
+.hero-stat{text-align:right}
+.hero-num{font-family:var(--font-mono);font-size:28px;font-weight:700;color:white;line-height:1;display:block;letter-spacing:-1px}
+.hero-lbl{font-size:9px;color:rgba(255,255,255,0.4);letter-spacing:1.5px;text-transform:uppercase;display:block;margin-top:3px;font-weight:500}
+.hero-divider{width:1px;height:32px;background:rgba(255,255,255,0.1);align-self:center;margin:0 2px}
+
+/* Streak badges */
+.streak-row{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.streak-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(249,115,22,0.12);border:1px solid rgba(249,115,22,0.25);border-radius:20px;padding:4px 10px;font-size:11px;font-weight:600;color:var(--orange);letter-spacing:0.3px}
+.streak-badge .fire{font-size:11px}
+.week-badge{display:inline-flex;align-items:center;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:4px 10px;font-size:11px;font-weight:500;color:rgba(255,255,255,0.5);letter-spacing:0.3px}
+
+/* Tabs */
+.tabs{display:flex;gap:2px;background:rgba(255,255,255,0.05);border-radius:12px 12px 0 0;padding:4px 4px 0;margin-top:4px}
+.tab{flex:1;padding:9px 4px 10px;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,0.35);cursor:pointer;border-radius:10px 10px 0 0;transition:all 0.2s;letter-spacing:0.5px;text-transform:uppercase;user-select:none;position:relative;font-family:var(--font-ui)}
+.tab.active{color:var(--ink);background:var(--paper)}
+.tab.active::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--orange);border-radius:2px 2px 0 0}
+
+/* ── SYNC BAR — slim toast style ── */
+.sync-bar{display:flex;align-items:center;justify-content:center;gap:6px;padding:6px 12px;font-size:10px;letter-spacing:0.8px;flex-shrink:0;font-weight:600;transition:all 0.3s;text-transform:uppercase;font-family:var(--font-ui)}
+.sync-bar.synced{background:var(--green-light);color:var(--green)}
+.sync-bar.syncing{background:var(--indigo-light);color:var(--indigo)}
+.sync-bar.error{background:var(--red-light);color:var(--red);padding:10px 16px;font-size:11px}
+.sync-dot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0}
 .sync-dot.pulse{animation:pulse 1.2s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.2}}
+
+/* ── SCROLL ── */
 .scroll-area{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 14px calc(14px + var(--safe-bottom))}
-.card{background:var(--card);border-radius:var(--radius);padding:14px;margin-bottom:10px;border:1px solid var(--border)}
-.card-title{font-family:'Bebas Neue',sans-serif;letter-spacing:1.5px;font-size:15px;color:var(--orange);margin-bottom:10px;display:flex;align-items:center;gap:8px}
-.card-title .dot{width:5px;height:5px;border-radius:50%;background:var(--orange);flex-shrink:0}
-.stat-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
-.stat{background:#0F172A;border-radius:var(--radius-sm);padding:10px;text-align:center}
-.stat-val{font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--orange);line-height:1}
-.stat-lbl{font-size:10px;color:var(--slate-light);letter-spacing:0.5px;margin-top:2px}
-.task{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
-.task:last-child{border-bottom:none}
-.task-check{width:24px;height:24px;border-radius:6px;border:1.5px solid var(--slate-light);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.15s;user-select:none}
-.task-check.done{background:var(--green);border-color:var(--green)}
-.task-check.done::after{content:'✓';font-size:13px;color:white;font-weight:700}
-.task-info{flex:1;min-width:0}
-.task-name{font-size:13px;font-weight:500;color:#E2E8F0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.task-name.done{text-decoration:line-through;color:var(--slate-light)}
-.task-meta{font-size:11px;color:var(--slate-light);margin-top:1px}
-.task-badge{font-size:9px;padding:2px 7px;border-radius:10px;font-weight:600;letter-spacing:0.5px;flex-shrink:0;white-space:nowrap}
-.badge-inject{background:#312E81;color:var(--indigo-light)}
-.badge-oral{background:#1C1917;color:#FED7AA}
-.badge-weekly{background:#14532D;color:#BBF7D0}
-.badge-retат{background:#3B1F5E;color:#DDD6FE}
-.sick-banner{background:linear-gradient(135deg,#7C3AED,#4F46E5);border-radius:var(--radius);padding:12px 14px;margin-bottom:10px;display:none}
-.sick-banner.show{display:block}
-.sick-title{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:1px;margin-bottom:5px}
-.sick-options{display:flex;gap:8px;margin-top:8px}
-.sick-btn{flex:1;padding:8px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:var(--radius-sm);color:white;font-size:12px;font-weight:600;cursor:pointer;text-align:center;transition:all 0.2s}
-.sick-btn.selected{background:white;color:var(--indigo)}
-.section-heading{font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:2px;color:var(--slate-light);margin-bottom:6px}
-.day-dot-row{display:flex;gap:6px;margin:6px 0}
-.day-dot{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
-.day-dot.on{background:var(--orange);color:white}
-.day-dot.off{background:#334155;color:var(--slate-light)}
-.day-dot.today{box-shadow:0 0 0 2px var(--orange),0 0 0 4px #1E293B}
-.timer-section{text-align:center;padding:16px 0 6px}
-.timer-ring{width:130px;height:130px;margin:0 auto 14px;position:relative}
+
+/* ── SECTION LABEL ── */
+.section-label{font-family:var(--font-ui);font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--ink-light);margin:16px 0 8px;padding:0 2px}
+
+/* ── CARDS ── */
+.card{background:white;border-radius:var(--radius);padding:16px;margin-bottom:10px;border:1px solid var(--border);position:relative;overflow:hidden}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.card-title{font-family:var(--font-ui);font-size:12px;font-weight:700;color:var(--ink-mid);letter-spacing:1.2px;text-transform:uppercase}
+.card-accent{width:3px;height:16px;background:var(--orange);border-radius:2px;flex-shrink:0;margin-right:10px}
+.card-title-row{display:flex;align-items:center}
+
+/* ── ACTIVITY FEED ITEMS ── */
+.activity-item{background:white;border-radius:var(--radius);border:1px solid var(--border);padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px;transition:all 0.15s;position:relative;overflow:hidden}
+.activity-item.completed{background:var(--paper);border-color:var(--border)}
+.activity-item.completed::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--green);border-radius:3px 0 0 3px}
+.activity-item.active-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--orange);border-radius:3px 0 0 3px}
+.activity-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.activity-icon.inject{background:var(--indigo-light)}
+.activity-icon.oral{background:var(--orange-light)}
+.activity-icon.weekly{background:var(--yellow-light)}
+.activity-icon.reta{background:linear-gradient(135deg,#7C3AED22,#4F46E522);border:1px solid #7C3AED22}
+.activity-icon.walk{background:var(--green-light)}
+.activity-body{flex:1;min-width:0}
+.activity-name{font-family:var(--font-ui);font-size:14px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;letter-spacing:0.1px}
+.activity-name.done-text{color:var(--ink-light);text-decoration:line-through;font-weight:400}
+.activity-meta{font-size:11px;color:var(--ink-light);margin-top:3px;line-height:1.4}
+.activity-check{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--border);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.2s;background:white}
+.activity-check.done{background:var(--green);border-color:var(--green)}
+.activity-check.done::after{content:'✓';font-size:12px;color:white;font-weight:700}
+.activity-check:not(.done):hover{border-color:var(--orange);background:var(--orange-light)}
+
+/* Monday achievement badge */
+.achievement-badge{display:inline-flex;align-items:center;gap:4px;background:var(--yellow-light);border:1px solid rgba(217,119,6,0.2);border-radius:20px;padding:2px 7px;font-size:10px;font-weight:600;color:var(--yellow);letter-spacing:0.3px;margin-left:6px;vertical-align:middle}
+
+/* ── WALK/STRAVA ACTIVITY ── */
+.strava-card{background:white;border-radius:var(--radius);border:1px solid var(--border);padding:16px;margin-bottom:10px;overflow:hidden;position:relative}
+.strava-card::after{content:'';position:absolute;top:0;right:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--orange),#F59E0B)}
+.strava-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.strava-icon{width:40px;height:40px;border-radius:10px;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.strava-info{flex:1}
+.strava-title{font-family:var(--font-ui);font-size:14px;font-weight:700;color:var(--ink);line-height:1;letter-spacing:0.2px}
+.strava-sub{font-size:11px;color:var(--ink-light);margin-top:3px}
+.strava-stats{display:flex;gap:0;margin:10px 0;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden}
+.strava-stat{flex:1;padding:9px 8px;text-align:center;border-right:1px solid var(--border)}
+.strava-stat:last-child{border-right:none}
+.strava-stat-val{font-family:var(--font-mono);font-size:17px;font-weight:700;color:var(--ink);display:block;line-height:1;letter-spacing:-0.5px}
+.strava-stat-lbl{font-size:9px;color:var(--ink-light);letter-spacing:1px;text-transform:uppercase;margin-top:3px;display:block;font-family:var(--font-ui)}
+/* Sleek standard-height button — not tall */
+.btn-strava{width:100%;padding:10px 16px;background:var(--orange);color:white;border:none;border-radius:8px;font-family:var(--font-ui);font-size:13px;font-weight:600;letter-spacing:0.5px;cursor:pointer;text-transform:uppercase;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn-strava.completed{background:var(--green);cursor:default}
+.btn-strava:active:not(.completed){transform:scale(0.98);background:#EA6C10}
+
+/* ── TIMER ── */
+.timer-hero{text-align:center;padding:16px 0 14px}
+.timer-label-top{font-family:var(--font-ui);font-size:10px;font-weight:600;letter-spacing:2.5px;color:var(--ink-light);text-transform:uppercase;margin-bottom:14px}
+.timer-ring{width:150px;height:150px;margin:0 auto 16px;position:relative}
 .timer-ring svg{transform:rotate(-90deg)}
-.timer-ring .bg{fill:none;stroke:#334155;stroke-width:9}
-.timer-ring .prog{fill:none;stroke:var(--orange);stroke-width:9;stroke-linecap:round;transition:stroke-dashoffset 1s linear}
-.timer-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
-.timer-time{font-family:'Bebas Neue',sans-serif;font-size:30px;color:var(--orange);line-height:1}
-.timer-lbl{font-size:9px;color:var(--slate-light);letter-spacing:1px}
-.btn-group{display:flex;gap:8px;justify-content:center;margin-bottom:14px}
-.btn-primary{background:var(--orange);color:white;border:none;padding:10px 26px;border-radius:20px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;cursor:pointer;letter-spacing:0.5px;transition:background 0.2s}
-.btn-primary:active{background:var(--orange-dark)}
-.btn-secondary{background:transparent;border:1.5px solid var(--slate-light);color:var(--slate-light);padding:10px 20px;border-radius:20px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;cursor:pointer}
-.inv-item{padding:10px 0;border-bottom:1px solid var(--border)}
-.inv-item:last-child{border-bottom:none}
-.inv-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
-.inv-name{font-weight:600;font-size:13px;color:#E2E8F0}
-.inv-count{font-family:'Bebas Neue',sans-serif;font-size:19px;color:var(--orange)}
-.inv-bar{height:5px;background:#334155;border-radius:3px;overflow:hidden;margin-bottom:5px}
-.inv-fill{height:100%;border-radius:3px;transition:width 0.5s}
-.inv-meta{font-size:10px;color:var(--slate-light);display:flex;justify-content:space-between;margin-bottom:6px}
-.btn-row{display:flex;gap:6px}
-.btn-sm{flex:1;padding:7px;border-radius:var(--radius-sm);font-size:11px;font-weight:600;cursor:pointer;border:none;transition:all 0.2s;letter-spacing:0.3px}
-.btn-use{background:#1C1917;color:var(--orange);border:1px solid var(--orange)}
-.btn-open{background:var(--orange);color:white}
-.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--border)}
+.timer-ring .bg-track{fill:none;stroke:var(--paper-dark);stroke-width:8}
+.timer-ring .prog-track{fill:none;stroke:var(--orange);stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset 1s linear}
+.timer-ring.danger .prog-track{stroke:var(--red)}
+.timer-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;width:130px}
+/* Mono digits — no jumping */
+.timer-digits{font-family:var(--font-mono);font-size:34px;font-weight:700;color:var(--ink);line-height:1;letter-spacing:-1px}
+.timer-digits.running{color:var(--orange)}
+.timer-digits.danger{color:var(--red)}
+.timer-lbl-inside{font-size:9px;color:var(--ink-light);letter-spacing:2px;text-transform:uppercase;margin-top:4px;font-family:var(--font-ui);font-weight:500}
+
+.fasted-warning{background:var(--red);color:white;border-radius:var(--radius-sm);padding:10px 14px;text-align:center;margin-bottom:14px;display:none;animation:fadeIn 0.3s ease}
+.fasted-warning.show{display:block}
+.fasted-warning-text{font-family:var(--font-ui);font-size:13px;font-weight:700;letter-spacing:0.5px}
+.fasted-warning-sub{font-size:11px;opacity:0.85;margin-top:2px}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+
+.btn-timer-row{display:flex;gap:8px;justify-content:center;margin-bottom:14px}
+.btn-timer-start{background:var(--ink);color:white;border:none;padding:11px 28px;border-radius:24px;font-family:var(--font-ui);font-weight:600;font-size:13px;cursor:pointer;letter-spacing:0.5px;transition:all 0.15s}
+.btn-timer-start:active{background:#333}
+.btn-timer-ghost{background:transparent;border:1.5px solid var(--border);color:var(--ink-mid);padding:11px 20px;border-radius:24px;font-family:var(--font-ui);font-weight:500;font-size:13px;cursor:pointer;transition:all 0.15s}
+
+/* ── CYCLE DOTS ── */
+.cycle-row{display:flex;gap:6px;margin:6px 0}
+.cycle-dot{flex:1;height:6px;border-radius:3px;background:var(--paper-dark)}
+.cycle-dot.on{background:var(--orange)}
+.cycle-dot.today{background:var(--ink);position:relative}
+.cycle-dot-labels{display:flex;gap:6px;margin-top:5px}
+.cycle-dot-label{flex:1;text-align:center;font-size:9px;color:var(--ink-light);letter-spacing:0.5px}
+.cycle-dot-label.today{color:var(--ink);font-weight:700}
+
+/* ── PEPTIDE GAUGES ── */
+.gauge-item{padding:12px 0;border-bottom:1px solid var(--border)}
+.gauge-item:last-child{border-bottom:none}
+.gauge-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.gauge-name{font-family:var(--font-ui);font-size:13px;font-weight:600;color:var(--ink);letter-spacing:0.1px}
+.gauge-doses{font-family:var(--font-mono);font-size:18px;font-weight:700;color:var(--ink);letter-spacing:-0.5px}
+.gauge-unit{font-size:11px;color:var(--ink-light);font-family:var(--font-ui);font-weight:400}
+.gauge-track{height:7px;background:var(--paper-dark);border-radius:4px;overflow:hidden;margin-bottom:6px;position:relative}
+.gauge-fill{height:100%;border-radius:4px;transition:width 0.6s cubic-bezier(.4,0,.2,1)}
+.gauge-fill.good{background:var(--orange)}
+.gauge-fill.warn{background:var(--yellow)}
+.gauge-fill.low{background:var(--red);animation:gaugePulse 1.5s infinite}
+@keyframes gaugePulse{0%,100%{opacity:1}50%{opacity:0.6}}
+.gauge-meta{display:flex;justify-content:space-between;font-size:10px;color:var(--ink-light)}
+.reorder-alert{display:inline-flex;align-items:center;gap:4px;background:var(--red);color:white;border-radius:10px;padding:2px 8px;font-size:10px;font-weight:600;letter-spacing:0.3px;animation:reorderPop 0.3s ease}
+@keyframes reorderPop{0%{transform:scale(0.8)}100%{transform:scale(1)}}
+
+/* ── EXPIRY TRACKER ── */
+.expiry-item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
+.expiry-item:last-child{border-bottom:none}
+.expiry-name{font-size:13px;font-weight:500;color:var(--ink)}
+.expiry-right{text-align:right}
+.expiry-days{font-family:var(--font-mono);font-size:17px;font-weight:700;letter-spacing:-0.5px}
+.expiry-date{font-size:10px;color:var(--ink-light);margin-top:1px}
+
+/* ── PARTNER LOG ── */
+
+
+/* ── RETA CARD ── */
+.reta-card{background:linear-gradient(135deg,#2D1B69,#1E1050);border-radius:var(--radius);padding:16px;margin-bottom:8px;position:relative;overflow:hidden}
+.reta-card::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;background:radial-gradient(circle,rgba(124,58,237,0.25) 0%,transparent 70%)}
+.reta-label{font-family:var(--font-ui);font-size:9px;font-weight:600;letter-spacing:2px;color:rgba(167,139,250,0.65);text-transform:uppercase;margin-bottom:4px}
+.reta-name{font-family:var(--font-ui);font-size:16px;font-weight:700;color:white;margin-bottom:2px;letter-spacing:0.2px}
+.reta-meta{font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:12px}
+.reta-btn-row{display:flex;gap:8px}
+.btn-reta-me{flex:1;padding:9px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:var(--radius-sm);color:white;font-family:var(--font-ui);font-size:12px;font-weight:600;cursor:pointer;transition:all 0.15s;text-align:center;letter-spacing:0.2px}
+.btn-reta-me.done{background:rgba(124,58,237,0.45);border-color:rgba(124,58,237,0.45)}
+.btn-reta-partner{flex:1;padding:9px;background:rgba(167,139,250,0.12);border:1px solid rgba(167,139,250,0.25);border-radius:var(--radius-sm);color:rgba(167,139,250,0.9);font-family:var(--font-ui);font-size:12px;font-weight:600;cursor:pointer;transition:all 0.15s;text-align:center;letter-spacing:0.2px}
+.btn-reta-partner.done{background:rgba(167,139,250,0.25)}
+.reta-gauge-track{height:4px;background:rgba(255,255,255,0.08);border-radius:2px;margin-top:12px;overflow:hidden}
+.reta-gauge-fill{height:100%;background:linear-gradient(90deg,#7C3AED,#A78BFA);border-radius:2px;transition:width 0.6s}
+
+/* ── VIAL MANUAL ── */
+.vial-row{padding:10px 0;border-bottom:1px solid var(--border)}
+.vial-row:last-child{border-bottom:none}
+.vial-name{font-family:var(--font-ui);font-size:12px;font-weight:600;color:var(--orange);margin-bottom:3px;letter-spacing:0.2px}
+.vial-spec{font-size:11px;color:var(--ink-mid);line-height:1.7}
+.vial-spec span{color:var(--ink-light)}
+
+/* ── NOTE ── */
+.note{font-size:11px;color:var(--ink-mid);line-height:1.6;padding:10px 12px;background:var(--paper);border-radius:var(--radius-sm);border-left:3px solid var(--indigo)}
+
+/* ── SETTINGS TOGGLES ── */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border)}
 .toggle-row:last-child{border-bottom:none}
-.toggle-label{font-size:13px;color:#E2E8F0;font-weight:500}
-.toggle-sub{font-size:11px;color:var(--slate-light);margin-top:2px}
-.toggle{width:42px;height:24px;background:#334155;border-radius:12px;position:relative;cursor:pointer;transition:background 0.2s;flex-shrink:0}
+.toggle-label{font-size:13px;color:var(--ink);font-weight:500}
+.toggle-sub{font-size:11px;color:var(--ink-light);margin-top:2px}
+.toggle{width:44px;height:26px;background:var(--border);border-radius:13px;position:relative;cursor:pointer;transition:background 0.2s;flex-shrink:0}
 .toggle.on{background:var(--orange)}
-.toggle::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;background:white;border-radius:50%;transition:transform 0.2s}
+.toggle::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;background:white;border-radius:50%;transition:transform 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.2)}
 .toggle.on::after{transform:translateX(18px)}
-.note{font-size:11px;color:var(--slate-light);line-height:1.5;padding:9px;background:#0F172A;border-radius:var(--radius-sm);border-left:3px solid var(--indigo)}
-.expiry-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)}
-.expiry-row:last-child{border-bottom:none}
-.btn-reset{width:100%;padding:11px;border:none;border-radius:var(--radius-sm);font-weight:600;font-size:13px;cursor:pointer;letter-spacing:0.5px;margin-bottom:8px}
+
+/* ── RESET BUTTONS ── */
+.btn-reset{width:100%;padding:11px;border:none;border-radius:var(--radius-sm);font-family:var(--font-ui);font-weight:600;font-size:13px;cursor:pointer;letter-spacing:0.3px;margin-bottom:8px;transition:all 0.15s}
 .btn-reset:last-child{margin-bottom:0}
+.btn-reset:active{transform:scale(0.98)}
+
+/* ── ACTIVITY RECORD BUTTON ── */
+.record-btn{
+  width:72px;height:72px;border-radius:50%;background:var(--orange);border:none;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  box-shadow:0 0 0 6px rgba(249,115,22,0.15);
+  transition:all 0.2s;flex-shrink:0;
+}
+.record-btn:active{transform:scale(0.94);background:#EA6C10}
+.record-btn.active{background:var(--ink);box-shadow:0 0 0 6px rgba(26,26,26,0.12)}
+.record-btn svg{pointer-events:none}
+.walk-route{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-mid);margin-bottom:14px;font-weight:500}
+.walk-route .dot{width:7px;height:7px;border-radius:50%;background:var(--orange);flex-shrink:0}
+.walk-route .line{flex:1;height:1px;background:var(--border);position:relative}
+.walk-route .line::after{content:'▶';position:absolute;right:-4px;top:-7px;font-size:10px;color:var(--border)}
+.walk-stats-row{display:flex;gap:0;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;margin-bottom:14px}
+.walk-stat{flex:1;padding:10px 8px;text-align:center;border-right:1px solid var(--border)}
+.walk-stat:last-child{border-right:none}
+.walk-stat-val{font-family:var(--font-mono);font-size:20px;font-weight:700;color:var(--ink);display:block;line-height:1;letter-spacing:-0.5px}
+.walk-stat-lbl{font-size:9px;color:var(--ink-light);letter-spacing:1px;text-transform:uppercase;margin-top:3px;display:block}
+.walk-hero{display:flex;align-items:center;gap:16px;margin-bottom:16px}
+.walk-hero-info{flex:1}
+.walk-hero-title{font-size:16px;font-weight:700;color:var(--ink);letter-spacing:-0.2px}
+.walk-hero-sub{font-size:11px;color:var(--ink-light);margin-top:3px}
+.live-timer{font-family:var(--font-mono);font-size:28px;font-weight:700;color:var(--orange);letter-spacing:-1px;line-height:1;margin-top:4px}
+.walk-done-bar{display:flex;align-items:center;gap:10px;background:var(--green-light);border:1px solid rgba(5,150,105,0.2);border-radius:var(--radius-sm);padding:10px 14px}
+.walk-done-bar .check{width:22px;height:22px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;color:white;font-size:12px;font-weight:700;flex-shrink:0}
+.walk-done-bar .text{font-size:13px;font-weight:600;color:var(--green)}
+.walk-done-bar .sub{font-size:11px;color:var(--green);opacity:0.7;margin-top:1px}
+.undo-btn{font-size:11px;color:var(--ink-light);background:none;border:none;cursor:pointer;margin-left:auto;text-decoration:underline;font-family:var(--font-ui)}
+
+/* ── STRENGTH MOVES ── */
+.strength-card{background:white;border-radius:var(--radius);border:1px solid var(--border);padding:16px;margin-bottom:10px}
+.move-item{padding:12px 0;border-bottom:1px solid var(--border)}
+.move-item:last-child{border-bottom:none}
+.move-header{display:flex;align-items:flex-start;gap:10px;margin-bottom:6px}
+.move-check{width:24px;height:24px;border-radius:6px;border:1.5px solid var(--border);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.2s;background:white;margin-top:1px}
+.move-check.done{background:var(--green);border-color:var(--green);color:white;font-size:12px;font-weight:700}
+.move-body{flex:1;min-width:0}
+.move-name{font-size:13px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.move-name.done{text-decoration:line-through;color:var(--ink-light);font-weight:400}
+.move-goal{display:inline-flex;align-items:center;background:var(--orange-light);color:var(--orange);border-radius:10px;padding:2px 8px;font-size:10px;font-weight:600;letter-spacing:0.3px;white-space:nowrap}
+.move-tip{font-size:11px;color:var(--ink-mid);line-height:1.5;padding:7px 10px;background:var(--paper);border-radius:6px;border-left:2px solid var(--indigo);margin-top:6px}
+.move-tip span{font-weight:600;color:var(--indigo)}
+.video-link{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;color:var(--orange);text-decoration:none;margin-top:6px;letter-spacing:0.3px}
+.video-link:hover{text-decoration:underline}
+.video-link svg{flex-shrink:0}
+
+/* ── PROTEIN TOAST ── */
+.protein-toast{
+  position:fixed;bottom:calc(16px + var(--safe-bottom));left:50%;transform:translateX(-50%);
+  background:var(--ink);color:white;border-radius:14px;padding:14px 20px;
+  display:flex;align-items:center;gap:12px;z-index:100;
+  box-shadow:0 8px 32px rgba(0,0,0,0.25);min-width:280px;max-width:340px;
+  animation:toastIn 0.3s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(20px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+.protein-icon{font-size:22px;flex-shrink:0}
+.protein-body{flex:1}
+.protein-title{font-size:13px;font-weight:700;letter-spacing:0.2px}
+.protein-sub{font-size:11px;opacity:0.6;margin-top:2px}
+.protein-timer{font-family:var(--font-mono);font-size:20px;font-weight:700;color:var(--orange);flex-shrink:0;letter-spacing:-0.5px}
+
+/* ── SECTIONS ── */
 .section{display:none}
 .section.active{display:block}
 
-/* STRAVA CARD */
-.strava-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;margin-bottom:10px;background:#0F172A;border-radius:var(--radius-sm);overflow:hidden}
-.strava-stat{padding:10px 8px;text-align:center;border-right:1px solid var(--border)}
-.strava-stat:last-child{border-right:none}
-.strava-val{font-family:'Bebas Neue',sans-serif;font-size:20px;color:#E2E8F0;line-height:1}
-.strava-lbl{font-size:9px;color:var(--slate-light);letter-spacing:0.5px;margin-top:2px}
-.strava-logo{display:flex;align-items:center;gap:6px;margin-bottom:8px}
-.strava-icon{width:18px;height:18px;background:var(--orange);clip-path:polygon(50% 0%,100% 38%,82% 100%,50% 69%,18% 100%,0% 38%);flex-shrink:0}
+/* ── STAT PILLS ROW ── */
+.stat-pills{display:flex;gap:8px;margin-bottom:10px}
+.stat-pill{flex:1;background:white;border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px 8px;text-align:center}
+.stat-pill-val{font-family:var(--font-mono);font-size:22px;font-weight:700;color:var(--ink);line-height:1;display:block;letter-spacing:-0.5px}
+.stat-pill-lbl{font-size:9px;color:var(--ink-light);letter-spacing:1.2px;text-transform:uppercase;margin-top:4px;display:block;font-family:var(--font-ui);font-weight:500}
+.stat-pill-val.orange{color:var(--orange)}
 
-/* RETATRUTIDE CARD */
-.reta-card{background:linear-gradient(135deg,#1E1B4B,#312E81);border:1px solid #4338CA;border-radius:var(--radius);padding:14px;margin-bottom:10px}
-.reta-title{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:1.5px;color:#A5B4FC;margin-bottom:8px;display:flex;align-items:center;gap:8px}
-.reta-row{display:flex;justify-content:space-between;align-items:center}
-.reta-dose{font-family:'Bebas Neue',sans-serif;font-size:32px;color:white;line-height:1}
-.reta-info{text-align:right;font-size:11px;color:#C7D2FE;line-height:1.8}
-.reta-check{display:flex;align-items:center;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.1)}
+/* Bottom inv action row */
+.inv-action-row{display:flex;gap:6px;margin-top:10px}
+.btn-inv{flex:1;padding:8px;border-radius:var(--radius-sm);font-family:var(--font-ui);font-size:11px;font-weight:600;cursor:pointer;border:none;transition:all 0.15s;letter-spacing:0.3px;text-transform:uppercase}
+.btn-use{background:var(--paper-dark);color:var(--orange);border:1px solid rgba(249,115,22,0.25)}
+.btn-open{background:var(--orange);color:white}
 </style>
 </head>
 <body>
 <div class="app">
+
+  <!-- HEADER -->
   <div class="header">
     <div class="header-top">
-      <div>
-        <div class="brand">HARLEM SHRED</div>
-        <div class="brand-sub">WEDDING PREP PROTOCOL</div>
+      <div class="brand-lockup">
+        <div class="brand">Wedding Prep Protocol</div>
+        <div class="brand-title">HARLEM <span>SHRED</span></div>
       </div>
-      <div class="countdown-pill">
-        <span class="days" id="daysLeft">—</span>
-        <span class="date-sub">DAYS · JULY 10</span>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span class="hero-num" id="daysLeft">—</span>
+          <span class="hero-lbl">Days Left</span>
+        </div>
+        <div class="hero-divider"></div>
+        <div class="hero-stat">
+          <span class="hero-num" id="streakCount">6</span>
+          <span class="hero-lbl">Day Streak</span>
+        </div>
       </div>
     </div>
+    <div class="streak-row">
+      <div class="streak-badge"><span class="fire">🔥</span> WEEK 2 OF 10</div>
+      <div class="week-badge">Since Apr 27</div>
+    </div>
     <div class="tabs">
-      <div class="tab active" onclick="showTab('today',this)">TODAY</div>
-      <div class="tab" onclick="showTab('timer',this)">TIMER</div>
-      <div class="tab" onclick="showTab('inventory',this)">INVENTORY</div>
-      <div class="tab" onclick="showTab('settings',this)">SETTINGS</div>
+      <div class="tab active" onclick="showTab('today',this)">Today</div>
+      <div class="tab" onclick="showTab('timer',this)">Timer</div>
+      <div class="tab" onclick="showTab('inventory',this)">Vials</div>
+      <div class="tab" onclick="showTab('settings',this)">Settings</div>
     </div>
   </div>
 
+  <!-- SYNC BAR -->
   <div class="sync-bar syncing" id="syncBar">
     <div class="sync-dot pulse" id="syncDot"></div>
     <span id="syncMsg">CONNECTING...</span>
   </div>
 
+  <!-- SCROLL AREA -->
   <div class="scroll-area">
 
-    <!-- TODAY -->
+    <!-- ══ TODAY ══ -->
     <div class="section active" id="tab-today">
-      <div class="stat-row">
-        <div class="stat"><div class="stat-val" id="doneTasks">0</div><div class="stat-lbl">DONE TODAY</div></div>
-        <div class="stat"><div class="stat-val" id="totalTasks">0</div><div class="stat-lbl">TOTAL TASKS</div></div>
-      </div>
 
-      <!-- Retatrutide Friday card -->
-      <div class="reta-card" id="retaCard" style="display:none">
-        <div class="reta-title">💉 RETATRUTIDE — FRIDAY DOSE</div>
-        <div class="reta-row">
-          <div>
-            <div class="reta-dose">2.5mg</div>
-            <div style="font-size:11px;color:#A5B4FC;margin-top:2px">Weekly injection</div>
-          </div>
-          <div class="reta-info">
-            <div>Slows gastric motility</div>
-            <div>Extend fasted window</div>
-            <div style="color:#818CF8">Log in inventory after use</div>
-          </div>
+      <div class="stat-pills">
+        <div class="stat-pill">
+          <span class="stat-pill-val orange" id="doneTasks">0</span>
+          <span class="stat-pill-lbl">Done Today</span>
         </div>
-        <div class="reta-check">
-          <div class="task-check" id="retaCheck" onclick="toggleTask('retatrutide')" style="border-color:#818CF8"></div>
-          <span style="font-size:12px;color:#C7D2FE;font-weight:500">Mark Retatrutide as injected</span>
+        <div class="stat-pill">
+          <span class="stat-pill-val" id="totalTasks">0</span>
+          <span class="stat-pill-lbl">Total Tasks</span>
+        </div>
+        <div class="stat-pill">
+          <span class="stat-pill-val" id="progressPct">0%</span>
+          <span class="stat-pill-lbl">Complete</span>
         </div>
       </div>
 
-      <div class="sick-banner" id="sickBanner">
-        <div class="sick-title">🛡 SICK / TRAVEL DAY ACTIVE</div>
-        <div style="font-size:12px;opacity:0.9">Physical activity moved to tomorrow. Skip injections?</div>
-        <div class="sick-options">
-          <div class="sick-btn" id="skipYes" onclick="setSkipInject(true)">YES — Extend Vial</div>
-          <div class="sick-btn" id="skipNo" onclick="setSkipInject(false)">NO — Inject Today</div>
-        </div>
-      </div>
+      <div class="section-label">07:00 Morning Protocol</div>
+      <div id="activityFeed"></div>
 
-      <div class="card">
-        <div class="card-title"><div class="dot"></div>07:00 FASTED PROTOCOL</div>
-        <div id="taskList"></div>
-      </div>
+      <!-- RETA CARD — Fridays only, rendered by JS -->
+      <div id="retaSection"></div>
 
-      <div class="card">
-        <div class="card-title"><div class="dot"></div>TESAMORELIN / IPAMORELIN CYCLE</div>
-        <div class="section-heading">5 ON · 2 OFF — THIS WEEK</div>
-        <div class="day-dot-row" id="cycleDots"></div>
-        <div class="note" style="margin-top:8px">⚡ Tesamorelin 6mg / Ipamorelin 2mg — 20 units fasted. Retatrutide slows gastric motility — respect the window.</div>
-      </div>
+      <!-- ACTIVITY -->
+      <div class="section-label">Activity</div>
+      <div id="walkSection"></div>
+      <div id="strengthSection"></div>
 
-      <div class="card">
-        <div class="card-title"><div class="dot"></div>FASTED WALK — MORNINGSIDE PARK</div>
-        <div id="activityTask"></div>
-        <div class="strava-stats" style="margin-top:10px">
-          <div class="strava-stat"><div class="strava-val">2.34</div><div class="strava-lbl">MI TARGET</div></div>
-          <div class="strava-stat"><div class="strava-val">44:40</div><div class="strava-lbl">TIME GOAL</div></div>
-          <div class="strava-stat"><div class="strava-val">19:02</div><div class="strava-lbl">PACE /MI</div></div>
-        </div>
-        <div class="strava-logo" style="margin-top:8px">
-          <div class="strava-icon"></div>
-          <span style="font-size:11px;color:var(--slate-light)">Based on your Strava activity · May 1, 2026</span>
-        </div>
-        <div class="note">326 cal · 5,216 steps · 156ft elevation. Log your walk on Strava after completing.</div>
-      </div>
+      <!-- PROTEIN WINDOW TOAST -->
+      <div id="proteinToast" class="protein-toast" style="display:none"></div>
+
     </div>
 
-    <!-- TIMER -->
+    <!-- ══ TIMER ══ -->
     <div class="section" id="tab-timer">
       <div class="card">
-        <div class="card-title"><div class="dot"></div>GOLDEN HOUR COUNTDOWN</div>
-        <div class="timer-section">
-          <div class="timer-ring">
-            <svg width="130" height="130" viewBox="0 0 130 130">
-              <circle class="bg" cx="65" cy="65" r="54"/>
-              <circle class="prog" id="timerProgress" cx="65" cy="65" r="54" stroke-dasharray="339" stroke-dashoffset="0"/>
+        <div class="card-header">
+          <div class="card-title-row"><div class="card-accent"></div><div class="card-title">Golden Hour Fast</div></div>
+        </div>
+        <div class="timer-hero">
+          <div class="timer-label-top">STAY FASTED — NO CALORIES</div>
+          <div class="timer-ring" id="timerRingEl">
+            <svg width="150" height="150" viewBox="0 0 150 150">
+              <circle class="bg-track" cx="75" cy="75" r="62"/>
+              <circle class="prog-track" id="timerProgress" cx="75" cy="75" r="62" stroke-dasharray="390" stroke-dashoffset="0"/>
             </svg>
             <div class="timer-center">
-              <div class="timer-time" id="timerDisplay">60:00</div>
-              <div class="timer-lbl">MINUTES</div>
+              <div class="timer-digits" id="timerDisplay">60:00</div>
+              <div class="timer-lbl-inside" id="timerStatus">READY</div>
             </div>
           </div>
-          <div class="btn-group">
-            <button class="btn-primary" id="timerBtn" onclick="toggleTimer()">START FAST</button>
-            <button class="btn-secondary" onclick="resetTimer()">RESET</button>
+
+          <div class="fasted-warning" id="fastedWarning">
+            <div class="fasted-warning-text">⛔ STAY FASTED — NO CALORIES</div>
+            <div class="fasted-warning-sub">Retatrutide extended window active</div>
           </div>
-          <div class="note">Start immediately after injections. No calories until 00:00. Walk Morningside Park loop during this window.</div>
+
+          <div class="btn-timer-row">
+            <button class="btn-timer-start" id="timerBtn" onclick="toggleTimer()">START FAST</button>
+            <button class="btn-timer-ghost" onclick="resetTimer()">Reset</button>
+          </div>
+          <div class="note">Start immediately after injections. No food until countdown hits zero. Retatrutide slows gastric motility — the fasted window is critical.</div>
         </div>
       </div>
-      <div class="card">
-        <div class="card-title"><div class="dot"></div>WALK ROUTE</div>
-        <div style="font-size:13px;color:#E2E8F0">
-          <div style="display:flex;gap:10px;align-items:center;padding:7px 0;border-bottom:1px solid var(--border)">
-            <span style="font-size:15px">📍</span><span>Start — 111th & St. Nicholas Ave</span>
+
+      <div class="card" style="margin-top:10px">
+        <div class="card-header"><div class="card-title-row"><div class="card-accent"></div><div class="card-title">Morning Route</div></div></div>
+        <div style="font-size:13px;color:var(--ink-mid)">
+          <div style="display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)">
+            <span style="font-size:16px">📍</span><div><div style="font-weight:600;color:var(--ink)">119 W 111th St</div><div style="font-size:11px;color:var(--ink-light)">Your apartment</div></div>
           </div>
-          <div style="display:flex;gap:10px;align-items:center;padding:7px 0;border-bottom:1px solid var(--border)">
-            <span style="font-size:15px">🌿</span><span>Morningside Park loop</span>
-          </div>
-          <div style="display:flex;gap:10px;align-items:center;padding:7px 0">
-            <span style="font-size:15px">🏁</span><span>Target: 2.34 mi · ~45 min</span>
+          <div style="display:flex;gap:10px;align-items:center;padding:8px 0">
+            <span style="font-size:16px">🏃</span><div><div style="font-weight:600;color:var(--ink)">Morningside Park Loop</div><div style="font-size:11px;color:var(--ink-light)">2.34 mi · ~45 min · 19:02/mi</div></div>
           </div>
         </div>
-        <div class="note" style="margin-top:10px">Fasted walk = GH pulse optimization. Log on Strava when done.</div>
+        <div class="note" style="margin-top:10px">Log your walk on Strava when complete. Strength training returns later — walk every morning.</div>
       </div>
     </div>
 
-    <!-- INVENTORY -->
+    <!-- ══ INVENTORY / VIALS ══ -->
     <div class="section" id="tab-inventory">
+
+      <div class="section-label">Peptide Gauges</div>
       <div class="card">
-        <div class="card-title"><div class="dot"></div>PEPTIDE INVENTORY</div>
-        <div id="invList"></div>
+        <div id="gaugeList"></div>
       </div>
+
+      <div class="section-label">Expiry Tracker</div>
       <div class="card">
-        <div class="card-title"><div class="dot"></div>VIAL REFERENCE</div>
-        <div style="font-size:11px;color:#CBD5E1;line-height:2">
-          <div style="border-bottom:1px solid var(--border);padding-bottom:6px;margin-bottom:6px"><span style="color:var(--orange);font-weight:600">Tesamorelin / Ipamorelin:</span> 8mg vial + 2mL BAC water = 10 doses @ 20 units each</div>
-          <div style="border-bottom:1px solid var(--border);padding-bottom:6px;margin-bottom:6px"><span style="color:var(--orange);font-weight:600">Glow Stack:</span> Daily injection — 12 units per dose</div>
-          <div style="border-bottom:1px solid var(--border);padding-bottom:6px;margin-bottom:6px"><span style="color:var(--orange);font-weight:600">B12 Methylcobalamin:</span> 20mL vial @ 2500mcg/mL · 50 doses × 40 units = 1000mcg</div>
-          <div><span style="color:#A5B4FC;font-weight:600">Retatrutide:</span> 2.5mg · Weekly injection every Friday</div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-title"><div class="dot"></div>EXPIRY TRACKER</div>
         <div id="expiryList"></div>
       </div>
-    </div>
 
-    <!-- SETTINGS -->
-    <div class="section" id="tab-settings">
+      <div class="section-label">Oral Pills</div>
       <div class="card">
-        <div class="card-title"><div class="dot"></div>SICK / TRAVEL DAY</div>
-        <div class="toggle-row">
-          <div><div class="toggle-label">Sick or Travel Day</div><div class="toggle-sub">Moves activity to tomorrow</div></div>
-          <div class="toggle" id="sickToggle" onclick="toggleSick()"></div>
+        <div id="pillList"></div>
+      </div>
+
+      <div class="section-label">Vial Manual</div>
+      <div class="card">
+        <div class="vial-row">
+          <div class="vial-name">Tesamorelin/Ipa Blend</div>
+          <div class="vial-spec">8mg vial (6mg Tesa + 2mg Ipa) <span>·</span> Recon 2mL BAC water<br>Dose: 20 units <span>·</span> 10 doses/vial <span>·</span> 5-on/2-off</div>
         </div>
-        <div class="toggle-row" id="skipInjectRow" style="display:none">
-          <div><div class="toggle-label">Skip Injections Today</div><div class="toggle-sub">Extends vial expiry +1 day</div></div>
-          <div class="toggle" id="skipInjectToggle" onclick="toggleSkipInject()"></div>
+        <div class="vial-row">
+          <div class="vial-name">Glow Stack</div>
+          <div class="vial-spec">Recon 2mL BAC water <span>·</span> Dose: 12 units <span>·</span> 16 doses/vial <span>·</span> Daily</div>
+        </div>
+        <div class="vial-row">
+          <div class="vial-name">B12 Methylcobalamin</div>
+          <div class="vial-spec">20mL vial @ 2500mcg/mL <span>·</span> No reconstitution<br>Dose: 40 units = 1000mcg <span>·</span> Mondays only</div>
+        </div>
+        <div class="vial-row">
+          <div class="vial-name">Retatrutide</div>
+          <div class="vial-spec">12mg vial <span>·</span> Recon 1.5mL BAC water<br>Shared dose: 62 units (31u each = 2.5mg each) <span>·</span> ~2 weeks/vial <span>·</span> Fridays</div>
         </div>
       </div>
+    </div>
+
+    <!-- ══ SETTINGS ══ -->
+    <div class="section" id="tab-settings">
       <div class="card">
-        <div class="card-title"><div class="dot"></div>PROTOCOL</div>
+        <div class="card-header"><div class="card-title-row"><div class="card-accent"></div><div class="card-title">Protocol</div></div></div>
         <div class="toggle-row">
           <div><div class="toggle-label">B12 Monday Reminder</div><div class="toggle-sub">Weekly — 40 units (1000mcg)</div></div>
-          <div class="toggle on"></div>
-        </div>
-        <div class="toggle-row">
-          <div><div class="toggle-label">Retatrutide Friday Reminder</div><div class="toggle-sub">2.5mg weekly injection</div></div>
           <div class="toggle on"></div>
         </div>
         <div class="toggle-row">
           <div><div class="toggle-label">Retatrutide Mode</div><div class="toggle-sub">Extended fasted window enforced</div></div>
           <div class="toggle on"></div>
         </div>
+        <div class="toggle-row">
+          <div><div class="toggle-label">Partner Sync</div><div class="toggle-sub">Real-time Reta dose logging</div></div>
+          <div class="toggle on"></div>
+        </div>
       </div>
+
       <div class="card">
-        <div class="card-title"><div class="dot"></div>DATA</div>
-        <button class="btn-reset" style="background:#7C3AED;color:white" onclick="resetDay()">RESET TODAY'S CHECKLIST</button>
-        <button class="btn-reset" style="background:var(--border);color:var(--slate-light)" onclick="confirmClearAll()">CLEAR ALL DATA</button>
+        <div class="card-header"><div class="card-title-row"><div class="card-accent"></div><div class="card-title">Data</div></div></div>
+        <button class="btn-reset" style="background:var(--indigo);color:white" onclick="resetDay()">Reset Today's Checklist</button>
+        <button class="btn-reset" style="background:var(--paper-dark);color:var(--ink-mid);border:1px solid var(--border)" onclick="confirmClearAll()">Clear All Data</button>
       </div>
-      <div class="card">
-        <div class="card-title"><div class="dot"></div>SYNC INFO</div>
-        <div style="font-size:11px;color:var(--slate-light);line-height:1.8">
-          <div>All data syncs in real-time across devices via Supabase.</div>
-          <div style="margin-top:6px;color:#475569">Changes on your phone appear instantly on your laptop and vice versa.</div>
+
+      <div class="card" style="border-color:var(--indigo-light)">
+        <div class="card-header"><div class="card-title-row"><div class="card-accent" style="background:var(--indigo)"></div><div class="card-title" style="color:var(--indigo)">Sync</div></div></div>
+        <div style="font-size:12px;color:var(--ink-light);line-height:1.8">
+          Real-time sync across all devices via Supabase.<br>
+          <span style="color:var(--ink-mid)">Changes appear instantly on phone and laptop.</span>
         </div>
       </div>
     </div>
 
-  </div>
-</div>
+  </div><!-- end scroll-area -->
+</div><!-- end app -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const SUPABASE_URL = 'https://yhcuhurqappqyijpvblh.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InloY3VodXJxYXBwcXlpanB2YmxoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2OTY3MjcsImV4cCI6MjA5MzI3MjcyN30.XR8TKYcKpqIAWcGovQpZ6VfZJkPqM7pW6XVS0GyoLeE';
+// ── SUPABASE ──────────────────────────────────────────────────────────────────
+const SUPABASE_URL = 'https://qchkzoyjpdqzpqzzmfgm.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_c5aySAGm0KPJ6LRfaglgPg_Wyt1XCm2';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+// Doses stored as unit counts
+// Tesla: 100u remaining (5 done × 20u), max 200u (10 doses × 20u) per vial = 10 doses
+// Glow: 128u remaining (6 done × 12u = 72u), max vial=192u (16×12). Wait — 128u of 192u left
+// Reta: 88u remaining (one 62u shared dose taken from 150u = 12mg/1.5mL, 62u dose ~2.4mg... but tracking in units). Let's track as units
+// B12: 1960u remaining (one 40u done from 2000u = 50 doses × 40u)
 
 let state = {
   tasks: {},
   inventory: {
-    tesa_ipa:    { vials: 3, dosesInCurrent: 10, expiry: '2026-06-15', maxDoses: 10 },
-    glow:        { vials: 2, dosesInCurrent: 20, expiry: '2026-06-20', maxDoses: 20 },
-    b12:         { vials: 1, dosesInCurrent: 50, expiry: '2026-07-01', maxDoses: 50 },
-    retatrutide: { vials: 1, dosesInCurrent: 8,  expiry: '2026-06-27', maxDoses: 8  }
+    tesla: {
+      units: 100,   // remaining units
+      maxUnits: 200, // 10 doses × 20u per vial
+      doseUnits: 20,
+      expiry: '2026-05-25',
+      vials: 2,
+      maxDosesPerVial: 10
+    },
+    glow: {
+      units: 128,
+      maxUnits: 192, // 16 doses × 12u
+      doseUnits: 12,
+      expiry: '2026-05-28',
+      vials: 2,
+      maxDosesPerVial: 16
+    },
+    b12: {
+      units: 1960,
+      maxUnits: 2000, // 50 doses × 40u
+      doseUnits: 40,
+      expiry: '2026-07-01',
+      vials: 1,
+      maxDosesPerVial: 50
+    },
+    reta: {
+      units: 88,
+      maxUnits: 124, // ~2 full shared doses (62u × 2 = 124) — tracking remaining of current vial
+      doseUnits: 62, // full shared dose (31u × 2)
+      expiry: '2026-05-30',
+      vials: 1,
+      maxDosesPerVial: 2
+    },
+    teso: { pills: null, dosePills: 1 },  // null = not yet counted
+    tyro: { pills: null, dosePills: 1 }
   },
-  sick_day: false,
-  skip_inject: false,
   timer_end: null,
-  last_day: ''
+  last_day: '',
+  walk_active_since: null,
+  protein_end: null,
+  partner_log: []
 };
 
 let timerInterval = null;
 let TOTAL_SECS = 3600;
 let realtimeChannel = null;
-let saveTimeout = null;
 
+// ── TASKS DEFINITION ─────────────────────────────────────────────────────────
 const TASKS = [
-  { id: 'tesa_ipa', name: 'Tesamorelin / Ipamorelin Blend', meta: '6mg / 2mg — 20 units · Fasted injection', badge: 'badge-inject', sickSkip: true },
-  { id: 'glow',     name: 'Glow Stack',                     meta: '12 units — Daily injection',              badge: 'badge-inject', sickSkip: true },
-  { id: 'teso',     name: 'Tesofensine',                    meta: '1 pill — Oral, fasted',                   badge: 'badge-oral' },
-  { id: 'tyro',     name: 'L-Tyrosine',                     meta: '1 pill — Oral, fasted',                   badge: 'badge-oral' },
-  { id: 'b12',      name: 'Vitamin B12 (Methylcobalamin)',   meta: '40 units — 1000mcg (Mondays only)',        badge: 'badge-weekly', mondayOnly: true },
+  { id: 'tesla', name: 'Tesamorelin/Ipamorelin Blend', sub: 'Tesa 6mg / Ipa 2mg', meta: '20 units · Fasted injection · 5-on/2-off', icon: '💉', iconClass: 'inject', invKey: 'tesla', cycleOff: true },
+  { id: 'glow', name: 'Glow Stack', meta: '12 units · Daily injection', icon: '✨', iconClass: 'inject', invKey: 'glow' },
+  { id: 'teso', name: 'Tesofensine', meta: '1 pill · Oral', icon: '💊', iconClass: 'oral', invKey: 'teso' },
+  { id: 'tyro', name: 'L-Tyrosine', meta: '1 pill · Oral', icon: '🧬', iconClass: 'oral', invKey: 'tyro' },
+  { id: 'b12', name: 'B12 Methylcobalamin', meta: '40 units · 1000mcg — Monday Boost', icon: '⚡', iconClass: 'weekly', mondayOnly: true, isMonday: true, invKey: 'b12' },
 ];
 
+// ── HELPERS ───────────────────────────────────────────────────────────────────
 function getToday() { return new Date().toISOString().slice(0, 10); }
-function isMonday()  { return new Date().getDay() === 1; }
-function isFriday()  { return new Date().getDay() === 5; }
+function isMonday() { return new Date().getDay() === 1; }
+function isFriday() { return new Date().getDay() === 5; }
+function isCycleOn() { return [1,2,3,4,5].includes(new Date().getDay()); } // Mon-Fri
 
 function daysUntil(y, m, d) {
-  let t = new Date(y, m-1, d), n = new Date(); n.setHours(0,0,0,0);
-  return Math.max(0, Math.ceil((t - n) / 86400000));
+  const target = new Date(y, m-1, d), now = new Date();
+  now.setHours(0,0,0,0);
+  return Math.max(0, Math.ceil((target - now) / 86400000));
 }
-function daysUntilDate(s) {
-  let t = new Date(s), n = new Date(); n.setHours(0,0,0,0);
-  return Math.max(0, Math.ceil((t - n) / 86400000));
+function daysUntilStr(s) {
+  const target = new Date(s), now = new Date();
+  now.setHours(0,0,0,0);
+  return Math.max(0, Math.ceil((target - now) / 86400000));
+}
+function dosesRemaining(invItem) {
+  return Math.floor(invItem.units / invItem.doseUnits);
+}
+function daysRemaining(invKey) {
+  const inv = state.inventory[invKey];
+  const doses = dosesRemaining(inv);
+  // estimate days based on frequency
+  if (invKey === 'tesla') return isCycleOn() ? Math.floor(doses * (7/5)) : doses;
+  if (invKey === 'glow') return doses; // daily
+  if (invKey === 'b12') return doses * 7; // weekly
+  if (invKey === 'reta') return doses * 7; // weekly
+  return doses;
 }
 
+// ── SYNC STATUS ───────────────────────────────────────────────────────────────
 function setSyncStatus(status, msg) {
   const bar = document.getElementById('syncBar');
   const dot = document.getElementById('syncDot');
+  const txt = document.getElementById('syncMsg');
   bar.className = 'sync-bar ' + status;
   dot.className = 'sync-dot' + (status === 'syncing' ? ' pulse' : '');
-  document.getElementById('syncMsg').textContent = msg;
+  txt.textContent = msg;
 }
 
+// ── LOAD ──────────────────────────────────────────────────────────────────────
 async function loadFromSupabase() {
   setSyncStatus('syncing', 'LOADING...');
   try {
-    const { data, error } = await sb.from('protocol').select('*').eq('id', 'singleton').maybeSingle();
+    const { data, error } = await sb.from('protocol').select('*').eq('id','singleton').single();
     if (error) throw error;
-    if (!data) {
-      // Row doesn't exist yet — create it
-      await saveToSupabase(true);
-      setSyncStatus('synced', 'SYNCED');
-      renderAll();
-      subscribeRealtime();
-      return;
-    }
     const today = getToday();
     if (data.last_day !== today) {
-      state.tasks = {}; state.sick_day = false; state.skip_inject = false;
-      state.timer_end = null; state.last_day = today;
+      state.tasks = {};
+      state.timer_end = null;
+      state.last_day = today;
       state.inventory = data.inventory || state.inventory;
-      await saveToSupabase(true);
+      state.partner_log = data.partner_log || [];
+      state.walk_active_since = data.walk_active_since || null;
+      await saveToSupabase();
     } else {
       state.tasks       = data.tasks       || {};
       state.inventory   = data.inventory   || state.inventory;
-      state.sick_day    = data.sick_day    || false;
-      state.skip_inject = data.skip_inject || false;
       state.timer_end   = data.timer_end   || null;
       state.last_day    = data.last_day    || today;
+      state.partner_log = data.partner_log || [];
+      state.walk_active_since = data.walk_active_since || null;
     }
     setSyncStatus('synced', 'SYNCED');
     renderAll();
     subscribeRealtime();
-  } catch (e) {
+    if (state.timer_end && Date.now() < state.timer_end) {
+      timerInterval = setInterval(renderTimer, 1000);
+    }
+  } catch(e) {
     setSyncStatus('error', 'SYNC ERROR — CHECK CONNECTION');
+    console.error(e);
     renderAll();
   }
 }
 
-async function saveToSupabase(immediate) {
+// ── SAVE ──────────────────────────────────────────────────────────────────────
+let saveTimeout = null;
+async function saveToSupabase() {
   clearTimeout(saveTimeout);
-  const doSave = async () => {
+  saveTimeout = setTimeout(async () => {
     setSyncStatus('syncing', 'SAVING...');
     try {
       const { error } = await sb.from('protocol').upsert({
-        id: 'singleton', tasks: state.tasks, inventory: state.inventory,
-        sick_day: state.sick_day, skip_inject: state.skip_inject,
-        timer_end: state.timer_end, last_day: state.last_day,
+        id: 'singleton',
+        tasks: state.tasks,
+        inventory: state.inventory,
+        timer_end: state.timer_end,
+        last_day: state.last_day,
+        partner_log: state.partner_log,
+        walk_active_since: state.walk_active_since,
         updated_at: new Date().toISOString()
       });
       if (error) throw error;
       setSyncStatus('synced', 'SYNCED');
-    } catch (e) { setSyncStatus('error', 'SAVE FAILED'); }
-  };
-  if (immediate) { await doSave(); }
-  else { saveTimeout = setTimeout(doSave, 400); }
+    } catch(e) {
+      setSyncStatus('error', 'SAVE FAILED');
+      console.error(e);
+    }
+  }, 400);
 }
 
+// ── REALTIME ──────────────────────────────────────────────────────────────────
 function subscribeRealtime() {
   if (realtimeChannel) sb.removeChannel(realtimeChannel);
   realtimeChannel = sb.channel('protocol-changes')
-    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'protocol', filter: 'id=eq.singleton' }, payload => {
-      const d = payload.new;
-      state.tasks = d.tasks || {}; state.inventory = d.inventory || state.inventory;
-      state.sick_day = d.sick_day || false; state.skip_inject = d.skip_inject || false;
-      state.timer_end = d.timer_end || null;
-      setSyncStatus('synced', 'SYNCED · LIVE');
-      renderAll();
-    }).subscribe();
+    .on('postgres_changes', { event:'UPDATE', schema:'public', table:'protocol', filter:'id=eq.singleton' },
+      payload => {
+        const d = payload.new;
+        state.tasks       = d.tasks       || {};
+        state.inventory   = d.inventory   || state.inventory;
+        state.timer_end   = d.timer_end   || null;
+        state.partner_log = d.partner_log || [];
+        setSyncStatus('synced', 'SYNCED · LIVE');
+        renderAll();
+      })
+    .subscribe();
 }
 
-function renderCountdown() { document.getElementById('daysLeft').textContent = daysUntil(2026, 7, 10); }
-
-function renderCycleDots() {
-  const days = ['M','T','W','T','F','S','S'];
-  const todayIdx = ((new Date().getDay() - 1 + 7) % 7);
-  document.getElementById('cycleDots').innerHTML = days.map((d, i) =>
-    `<div class="day-dot ${i < 5 ? 'on' : 'off'} ${i === todayIdx ? 'today' : ''}">${d}</div>`
-  ).join('');
+// ── RENDER: COUNTDOWN ─────────────────────────────────────────────────────────
+function renderCountdown() {
+  document.getElementById('daysLeft').textContent = daysUntil(2026,7,10);
 }
 
-function renderTasks() {
-  const sick = state.sick_day, skip = state.skip_inject;
-
-  // Show Retatrutide card on Fridays
-  const retaCard = document.getElementById('retaCard');
-  const retaCheck = document.getElementById('retaCheck');
-  if (isFriday()) {
-    retaCard.style.display = 'block';
-    const retaDone = !!(state.tasks && state.tasks['retatrutide']);
-    retaCheck.className = 'task-check' + (retaDone ? ' done' : '');
-    retaCheck.style.borderColor = retaDone ? '' : '#818CF8';
-  } else {
-    retaCard.style.display = 'none';
-  }
-
+// ── RENDER: TODAY FEED ────────────────────────────────────────────────────────
+function renderTodayFeed() {
+  const monday = isMonday();
   const visible = TASKS.filter(t => {
-    if (t.mondayOnly && !isMonday()) return false;
-    if (sick && skip && t.sickSkip) return false;
+    if (t.mondayOnly && !monday) return false;
+    if (t.cycleOff && !isCycleOn()) return false;
     return true;
   });
 
-  document.getElementById('taskList').innerHTML = visible.length
-    ? visible.map(t => {
-        const done = !!(state.tasks && state.tasks[t.id]);
-        return `<div class="task">
-          <div class="task-check ${done ? 'done' : ''}" onclick="toggleTask('${t.id}')"></div>
-          <div class="task-info">
-            <div class="task-name ${done ? 'done' : ''}">${t.name}</div>
-            <div class="task-meta">${t.meta}</div>
-          </div>
-          <div class="task-badge ${t.badge}">${t.badge.replace('badge-','').toUpperCase()}</div>
-        </div>`;
-      }).join('')
-    : '<div style="color:var(--slate-light);font-size:13px;padding:8px 0">Injections skipped — sick day active.</div>';
+  const feedHTML = visible.map(t => {
+    const done = !!(state.tasks && state.tasks[t.id]);
+    const isMondayBoost = t.id === 'b12' && monday;
+    return `
+      <div class="activity-item ${done ? 'completed' : 'active-item'}" id="item-${t.id}">
+        <div class="activity-icon ${t.iconClass}">${t.icon}</div>
+        <div class="activity-body">
+          <div class="activity-name ${done ? 'done-text' : ''}">${t.name}${isMondayBoost ? '<span class="achievement-badge">🏆 MONDAY BOOST</span>' : ''}</div>
+          <div class="activity-meta">${t.meta}</div>
+        </div>
+        <div class="activity-check ${done ? 'done' : ''}" onclick="toggleTask('${t.id}')"></div>
+      </div>`;
+  }).join('');
 
-  document.getElementById('activityTask').innerHTML = sick
-    ? `<div class="task"><div style="font-size:18px">🔄</div><div class="task-info"><div class="task-name" style="color:var(--yellow)">Activity moved to tomorrow</div><div class="task-meta">Sick/Travel Day active</div></div></div>`
-    : `<div class="task">
-        <div class="task-check ${state.tasks && state.tasks['walk'] ? 'done' : ''}" onclick="toggleTask('walk')"></div>
-        <div class="task-info">
-          <div class="task-name ${state.tasks && state.tasks['walk'] ? 'done' : ''}">Fasted Walk — Morningside Park</div>
-          <div class="task-meta">Target: 2.34 mi · ~45 min · Log on Strava</div>
+  document.getElementById('activityFeed').innerHTML = feedHTML;
+
+  // Reta — Fridays only
+  const retaSection = document.getElementById('retaSection');
+  if (isFriday()) {
+    const retaDoneMe = !!(state.tasks && state.tasks['reta_me']);
+    const retaDonePartner = !!(state.tasks && state.tasks['reta_partner']);
+    const inv = state.inventory.reta;
+    const pct = inv.units / inv.maxUnits;
+    retaSection.innerHTML = `
+      <div class="section-label">Friday — Retatrutide</div>
+      <div class="reta-card">
+        <div class="reta-label">Weekly Injection</div>
+        <div class="reta-name">Retatrutide 2.5mg</div>
+        <div class="reta-meta">62 units shared dose · 31u each</div>
+        <div class="reta-btn-row">
+          <div class="btn-reta-me ${retaDoneMe ? 'done' : ''}" onclick="toggleRetaDose('me')">
+            ${retaDoneMe ? '✓ ' : ''}My Dose (31u)
+          </div>
+          <div class="btn-reta-partner ${retaDonePartner ? 'done' : ''}" onclick="toggleRetaDose('partner')">
+            ${retaDonePartner ? '✓ ' : ''}Partner (31u)
+          </div>
+        </div>
+        <div class="reta-gauge-track">
+          <div class="reta-gauge-fill" style="width:${Math.round(pct*100)}%"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:6px">
+          <span style="font-size:10px;color:rgba(255,255,255,0.4)">${inv.units}u remaining in vial</span>
+          <span style="font-size:10px;color:rgba(255,255,255,0.4)">${Math.floor(inv.units/inv.doseUnits)} doses left</span>
         </div>
       </div>`;
+  } else {
+    retaSection.innerHTML = '';
+  }
 
-  const fridayTask = isFriday() && !sick ? 1 : 0;
-  const total = visible.length + 1 + fridayTask; // +1 for walk
+  // Walk / Activity
+  renderWalkCard();
+  renderStrengthCard();
+
+  // Counts
+  const total = visible.length + 1 + STRENGTH_MOVES.length + (isFriday() ? 1 : 0); // tasks + walk + strength + reta
   const done = Object.values(state.tasks || {}).filter(Boolean).length;
   document.getElementById('doneTasks').textContent = done;
   document.getElementById('totalTasks').textContent = total;
+  document.getElementById('progressPct').textContent = total > 0 ? Math.round((done/total)*100)+'%' : '0%';
+
+  // Check if injections just completed — trigger timer hint
+  const injectionIds = ['tesla','glow'];
+  const injectionsVisible = visible.filter(t => injectionIds.includes(t.id));
+  const injectionsDone = injectionsVisible.every(t => state.tasks && state.tasks[t.id]);
+  if (injectionsDone && injectionsVisible.length > 0) {
+    document.getElementById('fastedWarning').classList.add('show');
+  } else {
+    document.getElementById('fastedWarning').classList.remove('show');
+  }
 }
 
 function toggleTask(id) {
   if (!state.tasks) state.tasks = {};
+  const wasOff = !state.tasks[id];
   state.tasks[id] = !state.tasks[id];
-  renderTasks(); saveToSupabase();
+
+  // Auto-deduct (or restore) inventory for tasks that have an invKey
+  const task = TASKS.find(t => t.id === id);
+  if (task && task.invKey) {
+    const inv = state.inventory[task.invKey];
+    if (inv) {
+      if ('pills' in inv) {
+        // Pill inventory
+        if (inv.pills !== null) {
+          inv.pills = wasOff
+            ? Math.max(0, inv.pills - inv.dosePills)
+            : inv.pills + inv.dosePills;
+        }
+      } else {
+        // Unit-based inventory
+        if (wasOff) {
+          inv.units = Math.max(0, inv.units - inv.doseUnits);
+        } else {
+          inv.units = Math.min(inv.maxUnits, inv.units + inv.doseUnits);
+        }
+      }
+    }
+  }
+
+  renderTodayFeed();
+  renderInventory();
+  saveToSupabase();
 }
 
+function toggleRetaDose(who) {
+  if (!state.tasks) state.tasks = {};
+  const key = 'reta_' + who;
+  const wasOff = !state.tasks[key];
+  state.tasks[key] = !state.tasks[key];
+
+  if (wasOff && who === 'partner') {
+    // Add to partner log
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('en-US', {hour:'numeric',minute:'2-digit'});
+    if (!state.partner_log) state.partner_log = [];
+    state.partner_log.unshift({ text: 'Partner logged Reta dose (31u)', time: timeStr });
+    if (state.partner_log.length > 5) state.partner_log = state.partner_log.slice(0, 5);
+  }
+  if (wasOff) {
+    // Deduct from reta inventory — half dose per person (31u)
+    state.inventory.reta.units = Math.max(0, state.inventory.reta.units - 31);
+  } else {
+    state.inventory.reta.units = Math.min(state.inventory.reta.maxUnits, state.inventory.reta.units + 31);
+  }
+
+  renderTodayFeed();
+  renderPartnerLog();
+  renderInventory();
+  saveToSupabase();
+}
+
+// ── RENDER: WALK CARD ─────────────────────────────────────────────────────────
+function renderWalkCard() {
+  const walkActive = state.walk_active_since;
+  const walkDone   = !!(state.tasks && state.tasks['walk']);
+
+  let innerHTML = '';
+
+  if (walkDone) {
+    // Completed state
+    innerHTML = `
+      <div class="walk-hero">
+        <div class="walk-hero-info">
+          <div class="walk-hero-title">Harlem Shred Walk</div>
+          <div class="walk-hero-sub">111th & St. Nicholas ➔ 117th & 3rd (PF East Harlem)</div>
+        </div>
+      </div>
+      <div class="walk-done-bar">
+        <div class="check">✓</div>
+        <div><div class="text">Activity Complete</div><div class="sub">0.8 mi · Nice work</div></div>
+        <button class="undo-btn" onclick="undoWalk()">Undo</button>
+      </div>`;
+  } else if (walkActive) {
+    // In-progress state
+    innerHTML = `
+      <div class="walk-hero">
+        <div class="record-btn active" onclick="endWalk()" title="Tap to end">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="white"><rect x="4" y="4" width="12" height="12" rx="2"/></svg>
+        </div>
+        <div class="walk-hero-info">
+          <div class="walk-hero-title">Recording…</div>
+          <div class="walk-hero-sub">111th & St. Nicholas ➔ 117th & 3rd</div>
+          <div class="live-timer" id="walkLiveTimer">0:00</div>
+        </div>
+      </div>
+      <div class="walk-stats-row">
+        <div class="walk-stat"><span class="walk-stat-val">0.8</span><span class="walk-stat-lbl">Miles</span></div>
+        <div class="walk-stat"><span class="walk-stat-val" id="walkPaceDisplay">—:—</span><span class="walk-stat-lbl">Pace/mi</span></div>
+        <div class="walk-stat"><span class="walk-stat-val" id="walkTimeDisplay">0:00</span><span class="walk-stat-lbl">Time</span></div>
+      </div>`;
+  } else {
+    // Ready state
+    innerHTML = `
+      <div class="walk-hero">
+        <button class="record-btn" onclick="startWalk()" title="Start activity">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="white"><polygon points="7,4 19,11 7,18"/></svg>
+        </button>
+        <div class="walk-hero-info">
+          <div class="walk-hero-title">Harlem Shred Walk</div>
+          <div class="walk-hero-sub">111th & St. Nicholas ➔ 117th & 3rd (PF East Harlem)</div>
+        </div>
+      </div>
+      <div class="walk-stats-row">
+        <div class="walk-stat"><span class="walk-stat-val">0.8</span><span class="walk-stat-lbl">Miles</span></div>
+        <div class="walk-stat"><span class="walk-stat-val">19:02</span><span class="walk-stat-lbl">Pace/mi</span></div>
+        <div class="walk-stat"><span class="walk-stat-val">~15</span><span class="walk-stat-lbl">Min Est.</span></div>
+      </div>`;
+  }
+
+  document.getElementById('walkSection').innerHTML =
+    `<div class="card" style="margin-bottom:8px">${innerHTML}</div>`;
+
+  // Restart live timer tick if mid-walk
+  if (walkActive && !walkTimerInterval) {
+    walkTimerInterval = setInterval(tickWalkTimer, 1000);
+  }
+}
+
+let walkTimerInterval = null;
+function tickWalkTimer() {
+  if (!state.walk_active_since) { clearInterval(walkTimerInterval); walkTimerInterval = null; return; }
+  const elapsed = Math.floor((Date.now() - state.walk_active_since) / 1000);
+  const m = Math.floor(elapsed / 60), s = elapsed % 60;
+  const fmt = m + ':' + String(s).padStart(2,'0');
+  const el1 = document.getElementById('walkLiveTimer');
+  const el2 = document.getElementById('walkTimeDisplay');
+  if (el1) el1.textContent = fmt;
+  if (el2) el2.textContent = fmt;
+  // Live pace: distance 0.8mi
+  const dist = 0.8;
+  if (elapsed > 10) {
+    const paceSecPerMile = elapsed / dist;
+    const pm = Math.floor(paceSecPerMile / 60), ps = Math.floor(paceSecPerMile % 60);
+    const paceEl = document.getElementById('walkPaceDisplay');
+    if (paceEl) paceEl.textContent = pm + ':' + String(ps).padStart(2,'0');
+  }
+}
+
+function startWalk() {
+  state.walk_active_since = Date.now();
+  clearInterval(walkTimerInterval);
+  walkTimerInterval = setInterval(tickWalkTimer, 1000);
+  renderWalkCard();
+  saveToSupabase();
+}
+
+function endWalk() {
+  clearInterval(walkTimerInterval); walkTimerInterval = null;
+  state.walk_active_since = null;
+  if (!state.tasks) state.tasks = {};
+  state.tasks['walk'] = true;
+  renderWalkCard();
+  renderTodayFeed();
+  startProteinTimer();
+  saveToSupabase();
+}
+
+function undoWalk() {
+  state.tasks['walk'] = false;
+  state.walk_active_since = null;
+  clearInterval(walkTimerInterval); walkTimerInterval = null;
+  renderWalkCard(); renderTodayFeed(); saveToSupabase();
+}
+
+// ── PROTEIN WINDOW TIMER ───────────────────────────────────────────────────────
+let proteinInterval = null;
+const PROTEIN_SECS = 45 * 60;
+
+function startProteinTimer() {
+  const endAt = Date.now() + PROTEIN_SECS * 1000;
+  state.protein_end = endAt;
+  clearInterval(proteinInterval);
+  proteinInterval = setInterval(() => tickProtein(endAt), 1000);
+  tickProtein(endAt);
+}
+
+function tickProtein(endAt) {
+  const rem = Math.max(0, Math.round((endAt - Date.now()) / 1000));
+  const m = Math.floor(rem / 60), s = rem % 60;
+  const toast = document.getElementById('proteinToast');
+  if (rem === 0) {
+    clearInterval(proteinInterval); proteinInterval = null;
+    toast.style.display = 'none';
+    state.protein_end = null;
+    return;
+  }
+  toast.style.display = 'flex';
+  toast.innerHTML = `
+    <div class="protein-icon">🥩</div>
+    <div class="protein-body">
+      <div class="protein-title">Protein Window Open</div>
+      <div class="protein-sub">Eat within this window</div>
+    </div>
+    <div class="protein-timer">${m}:${String(s).padStart(2,'0')}</div>`;
+}
+
+// ── RENDER: STRENGTH CARD ─────────────────────────────────────────────────────
+const STRENGTH_MOVES = [
+  {
+    id: 'move_pushup',
+    name: 'Deficit Push-ups',
+    goal: '3 sets to failure',
+    tip: 'Hands on dumbbells or steps — drop <strong>chest below hand level</strong> for max stretch.',
+    url: 'https://www.youtube.com/watch?v=kdOh9nQmioQ'
+  },
+  {
+    id: 'move_hanglr',
+    name: 'Hanging Leg Raises',
+    goal: '3 × 15',
+    tip: '<strong>Curl your pelvis</strong> toward your belly button — do not swing your legs.',
+    url: 'https://www.youtube.com/watch?v=Pr1ieGZ576s'
+  },
+  {
+    id: 'move_lateral',
+    name: 'Lateral Raises',
+    goal: '3 × 12',
+    tip: '<strong>Lead with elbows, not wrists</strong> — stop exactly at shoulder height.',
+    url: 'https://www.youtube.com/watch?v=3VcKaXpzqRo'
+  }
+];
+
+function renderStrengthCard() {
+  const movesHTML = STRENGTH_MOVES.map(m => {
+    const done = !!(state.tasks && state.tasks[m.id]);
+    return `
+      <div class="move-item">
+        <div class="move-header">
+          <div class="move-check ${done ? 'done' : ''}" onclick="toggleTask('${m.id}')">${done ? '✓' : ''}</div>
+          <div class="move-body">
+            <div class="move-name ${done ? 'done' : ''}">
+              ${m.name}
+              <span class="move-goal">${m.goal}</span>
+            </div>
+            <div class="move-tip">💡 <span>Form:</span> ${m.tip}</div>
+            <a class="video-link" href="${m.url}" target="_blank" rel="noopener">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M23 7s-.3-2-1.2-2.8c-1.1-1.2-2.4-1.2-3-1.3C16.1 2.8 12 2.8 12 2.8s-4.1 0-6.8.2c-.6.1-1.9.1-3 1.3C1.3 5 1 7 1 7S.7 9.1.7 11.2v2c0 2.1.3 4.2.3 4.2s.3 2 1.2 2.8c1.1 1.2 2.6 1.1 3.3 1.2C7.3 21.6 12 21.7 12 21.7s4.1 0 6.8-.3c.6-.1 1.9-.1 3-1.2.9-.8 1.2-2.8 1.2-2.8s.3-2.1.3-4.2v-2C23.3 9.1 23 7 23 7zM9.7 15.5V8.4l8.1 3.6-8.1 3.5z"/></svg>
+              Watch Demo
+            </a>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+
+  const allDone = STRENGTH_MOVES.every(m => state.tasks && state.tasks[m.id]);
+  document.getElementById('strengthSection').innerHTML = `
+    <div class="strength-card">
+      <div class="card-header">
+        <div class="card-title-row"><div class="card-accent"></div><div class="card-title">Wedding Shape Finisher</div></div>
+        ${allDone ? '<span style="font-size:11px;font-weight:600;color:var(--green)">✓ COMPLETE</span>' : '<span style="font-size:11px;color:var(--ink-light)">3 moves</span>'}
+      </div>
+      ${movesHTML}
+    </div>`;
+}
+
+// ── RENDER: TIMER ─────────────────────────────────────────────────────────────
 function renderTimer() {
+  const now = Date.now();
   let remaining = TOTAL_SECS;
-  if (state.timer_end) remaining = Math.max(0, Math.round((state.timer_end - Date.now()) / 1000));
+  if (state.timer_end) remaining = Math.max(0, Math.round((state.timer_end - now) / 1000));
   const m = Math.floor(remaining / 60), s = remaining % 60;
-  document.getElementById('timerDisplay').textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-  document.getElementById('timerProgress').style.strokeDashoffset = 339 * (1 - remaining / TOTAL_SECS);
-  document.getElementById('timerBtn').textContent = state.timer_end
-    ? (remaining > 0 ? 'PAUSE' : 'DONE! EAT NOW 🍳') : 'START FAST';
+  const display = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  const digits = document.getElementById('timerDisplay');
+  const ring = document.getElementById('timerRingEl');
+  const prog = document.getElementById('timerProgress');
+  const statusEl = document.getElementById('timerStatus');
+
+  digits.textContent = display;
+  prog.style.strokeDashoffset = 390 * (1 - remaining / TOTAL_SECS);
+
+  const pct = remaining / TOTAL_SECS;
+  const isDanger = pct < 0.1 && remaining > 0;
+  digits.className = 'timer-digits' + (state.timer_end && remaining > 0 ? ' running' : '') + (isDanger ? ' danger' : '');
+  ring.className = 'timer-ring' + (isDanger ? ' danger' : '');
+
+  if (!state.timer_end || Date.now() >= state.timer_end) {
+    document.getElementById('timerBtn').textContent = remaining === 0 ? 'EAT NOW 🍳' : 'START FAST';
+    statusEl.textContent = remaining === 0 ? 'COMPLETE' : 'READY';
+  } else {
+    document.getElementById('timerBtn').textContent = 'PAUSE';
+    statusEl.textContent = 'FASTING';
+  }
   if (remaining === 0 && timerInterval) { clearInterval(timerInterval); timerInterval = null; }
 }
 
@@ -537,7 +1096,8 @@ function toggleTimer() {
     timerInterval = setInterval(renderTimer, 1000);
   } else {
     const rem = Math.max(0, Math.round((state.timer_end - Date.now()) / 1000));
-    state.timer_end = null; TOTAL_SECS = rem;
+    state.timer_end = null;
+    TOTAL_SECS = rem;
     clearInterval(timerInterval); timerInterval = null;
   }
   renderTimer(); saveToSupabase();
@@ -549,52 +1109,76 @@ function resetTimer() {
   renderTimer(); saveToSupabase();
 }
 
+// ── RENDER: INVENTORY ─────────────────────────────────────────────────────────
 function renderInventory() {
   const inv = state.inventory;
   const items = [
-    { key: 'tesa_ipa',    name: 'Tesamorelin / Ipa Blend', extra: '8mg vial / 2mL BAC water' },
-    { key: 'glow',        name: 'Glow Stack',              extra: 'Daily — 12 units' },
-    { key: 'b12',         name: 'B12 Methylcobalamin',     extra: '20mL / 2500mcg/mL' },
-    { key: 'retatrutide', name: 'Retatrutide',             extra: '2.5mg · Fridays only' },
+    { key:'tesla', name:'Tesa/Ipa Blend', freq:'5-on/2-off', schedDays: 5 },
+    { key:'glow',  name:'Glow Stack',  freq:'Daily', schedDays: 7 },
+    { key:'b12',   name:'B12 Methyl',  freq:'Mondays Only', schedDays: 1 },
+    { key:'reta',  name:'Retatrutide', freq:'Fridays Only', schedDays: 1 },
   ];
-  document.getElementById('invList').innerHTML = items.map(item => {
+
+  document.getElementById('gaugeList').innerHTML = items.map(item => {
     const d = inv[item.key];
-    const pct = d.dosesInCurrent / d.maxDoses;
-    const barColor = pct > 0.4 ? 'var(--orange)' : pct > 0.2 ? 'var(--yellow)' : 'var(--red)';
-    return `<div class="inv-item">
-      <div class="inv-header">
-        <span class="inv-name">${item.name}</span>
-        <span class="inv-count">${d.dosesInCurrent}<span style="font-size:10px;color:var(--slate-light)"> doses</span></span>
-      </div>
-      <div class="inv-bar"><div class="inv-fill" style="width:${Math.round(pct*100)}%;background:${barColor}"></div></div>
-      <div class="inv-meta"><span>${item.extra}</span><span>${d.vials} vials left</span></div>
-      <div class="btn-row">
-        <button class="btn-sm btn-use" onclick="useInvDose('${item.key}')">USE DOSE</button>
-        <button class="btn-sm btn-open" onclick="openNewVial('${item.key}')">OPEN VIAL</button>
-      </div>
-    </div>`;
+    const pct = d.units / d.maxUnits;
+    const doses = dosesRemaining(d);
+    const daysLeft = item.key === 'b12' ? doses * 7 :
+                     item.key === 'reta' ? doses * 7 :
+                     item.key === 'tesla' ? Math.floor(doses * 7 / 5) :
+                     doses; // glow = daily
+    const isReorder = daysLeft <= 4;
+    const fillClass = pct > 0.4 ? 'good' : pct > 0.2 ? 'warn' : 'low';
+
+    return `
+      <div class="gauge-item">
+        <div class="gauge-header">
+          <div>
+            <div class="gauge-name">${item.name}</div>
+            <div style="font-size:10px;color:var(--ink-light);margin-top:2px">${item.freq} · ${d.units}u remaining · ${d.vials} vial${d.vials!==1?'s':''}</div>
+          </div>
+          <div style="text-align:right">
+            <div class="gauge-doses">${doses}<span class="gauge-unit"> doses</span></div>
+            ${isReorder ? '<div class="reorder-alert">🚨 REORDER</div>' : `<div style="font-size:10px;color:var(--ink-light);margin-top:3px">~${daysLeft}d supply</div>`}
+          </div>
+        </div>
+        <div class="gauge-track">
+          <div class="gauge-fill ${fillClass}" style="width:${Math.round(pct*100)}%"></div>
+        </div>
+        <div class="gauge-meta">
+          <span>${Math.round(pct*100)}% remaining</span>
+          <span>Dose: ${d.doseUnits}u</span>
+        </div>
+        <div class="inv-action-row">
+          <button class="btn-inv btn-use" onclick="useInvDose('${item.key}')">Use Dose</button>
+          <button class="btn-inv btn-open" onclick="openNewVial('${item.key}')">Open Vial</button>
+        </div>
+      </div>`;
   }).join('');
 
+  // Expiry
   document.getElementById('expiryList').innerHTML = items.map(item => {
     const d = inv[item.key];
-    const days = daysUntilDate(d.expiry);
+    const days = daysUntilStr(d.expiry);
     const color = days > 14 ? 'var(--green)' : days > 7 ? 'var(--yellow)' : 'var(--red)';
-    return `<div class="expiry-row">
-      <div style="font-size:13px;color:#E2E8F0;font-weight:500">${item.name}</div>
-      <div style="text-align:right">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:17px;color:${color}">${days}d left</div>
-        <div style="font-size:10px;color:var(--slate-light)">${d.expiry}</div>
-      </div>
-    </div>`;
+    return `
+      <div class="expiry-item">
+        <div class="expiry-name">${item.name}</div>
+        <div class="expiry-right">
+          <div class="expiry-days" style="color:${color}">${days}d</div>
+          <div class="expiry-date">${d.expiry}</div>
+        </div>
+      </div>`;
   }).join('');
 }
 
 function useInvDose(key) {
   const inv = state.inventory;
-  if (inv[key].dosesInCurrent > 0) {
-    inv[key].dosesInCurrent--;
-    if (inv[key].dosesInCurrent === 0 && inv[key].vials > 1) {
-      if (confirm('Current vial empty. Open next vial?')) { openNewVial(key); return; }
+  const d = inv[key];
+  if (d.units >= d.doseUnits) {
+    d.units -= d.doseUnits;
+    if (d.units === 0 && d.vials > 0) {
+      if (confirm('Vial empty. Open next vial?')) { openNewVial(key); return; }
     }
     renderInventory(); saveToSupabase();
   }
@@ -602,65 +1186,88 @@ function useInvDose(key) {
 
 function openNewVial(key) {
   const inv = state.inventory;
-  if (inv[key].vials > 0) {
+  const d = inv[key];
+  if (d.vials > 0) {
     const exp = new Date(); exp.setDate(exp.getDate() + 28);
-    inv[key].vials--; inv[key].dosesInCurrent = inv[key].maxDoses;
-    inv[key].expiry = exp.toISOString().slice(0, 10);
+    d.vials--;
+    d.units = d.maxUnits;
+    d.expiry = exp.toISOString().slice(0, 10);
     renderInventory(); saveToSupabase();
-  } else { alert('No vials remaining — time to reorder!'); }
+  } else {
+    alert('No vials remaining — time to reorder!');
+  }
 }
 
-function extendExpiry(key, days) {
-  const d = new Date(state.inventory[key].expiry);
-  d.setDate(d.getDate() + days);
-  state.inventory[key].expiry = d.toISOString().slice(0, 10);
+// ── RENDER: PILLS ────────────────────────────────────────────────────────────
+function renderPills() {
+  const pills = [
+    { key: 'teso', name: 'Tesofensine', meta: '1 pill daily · Oral' },
+    { key: 'tyro', name: 'L-Tyrosine',  meta: '1 pill daily · Oral' },
+  ];
+  document.getElementById('pillList').innerHTML = pills.map(p => {
+    const d = state.inventory[p.key];
+    const count = d.pills;
+    const isUnset = count === null;
+    const isLow = !isUnset && count <= 4;
+    return `
+      <div class="gauge-item">
+        <div class="gauge-header">
+          <div>
+            <div class="gauge-name">${p.name}</div>
+            <div style="font-size:10px;color:var(--ink-light);margin-top:2px">${p.meta}</div>
+          </div>
+          <div style="text-align:right;display:flex;align-items:center;gap:8px">
+            ${isLow ? '<div class="reorder-alert">🚨 REORDER</div>' : ''}
+            <div class="gauge-doses">${isUnset ? '—' : count}<span class="gauge-unit"> pills</span></div>
+          </div>
+        </div>
+        ${isUnset
+          ? `<div style="display:flex;align-items:center;gap:8px;margin-top:8px">
+               <input id="pill-input-${p.key}" type="number" min="0" placeholder="Enter pill count"
+                 style="flex:1;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:var(--font-ui);font-size:13px;background:var(--paper);color:var(--ink);outline:none">
+               <button onclick="setPillCount('${p.key}')"
+                 style="padding:9px 16px;background:var(--orange);color:white;border:none;border-radius:var(--radius-sm);font-family:var(--font-ui);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap">Set Count</button>
+             </div>`
+          : `<div class="gauge-track" style="margin-top:8px">
+               <div class="gauge-fill ${isLow ? 'low' : 'good'}" style="width:${Math.min(100, Math.round((count/30)*100))}%"></div>
+             </div>
+             <div class="gauge-meta">
+               <span>~${count} days supply</span>
+               <div class="inv-action-row" style="margin-top:0;gap:6px">
+                 <button class="btn-inv btn-use" onclick="usePill('${p.key}')">Use Pill</button>
+                 <button class="btn-inv btn-open" onclick="setPillCountPrompt('${p.key}')">Update Count</button>
+               </div>
+             </div>`
+        }
+      </div>`;
+  }).join('');
 }
 
-function toggleSick() {
-  state.sick_day = !state.sick_day;
-  if (!state.sick_day) state.skip_inject = false;
-  renderSickUI(); renderTasks(); saveToSupabase();
+function setPillCount(key) {
+  const input = document.getElementById('pill-input-' + key);
+  const val = parseInt(input.value);
+  if (isNaN(val) || val < 0) return;
+  state.inventory[key].pills = val;
+  renderPills(); saveToSupabase();
 }
 
-function setSkipInject(val) {
-  state.skip_inject = val;
-  if (val) { extendExpiry('tesa_ipa', 1); extendExpiry('glow', 1); renderInventory(); }
-  renderSickUI(); renderTasks(); saveToSupabase();
+function setPillCountPrompt(key) {
+  const name = key === 'teso' ? 'Tesofensine' : 'L-Tyrosine';
+  const val = parseInt(prompt(\`How many \${name} pills do you have?\`));
+  if (isNaN(val) || val < 0) return;
+  state.inventory[key].pills = val;
+  renderPills(); saveToSupabase();
 }
 
-function toggleSkipInject() { setSkipInject(!state.skip_inject); }
-
-function renderSickUI() {
-  document.getElementById('sickToggle').classList.toggle('on', state.sick_day);
-  document.getElementById('sickBanner').classList.toggle('show', state.sick_day);
-  document.getElementById('skipInjectRow').style.display = state.sick_day ? 'flex' : 'none';
-  document.getElementById('skipInjectToggle').classList.toggle('on', !!state.skip_inject);
-  document.getElementById('skipYes').classList.toggle('selected', state.skip_inject === true);
-  document.getElementById('skipNo').classList.toggle('selected', state.skip_inject === false && state.sick_day);
+function usePill(key) {
+  const d = state.inventory[key];
+  if (d.pills !== null && d.pills > 0) {
+    d.pills = Math.max(0, d.pills - 1);
+    renderPills(); saveToSupabase();
+  }
 }
 
-function resetDay() {
-  if (!confirm('Reset today\'s checklist?')) return;
-  state.tasks = {}; state.timer_end = null; TOTAL_SECS = 3600;
-  clearInterval(timerInterval); timerInterval = null;
-  renderTasks(); renderTimer(); saveToSupabase();
-}
-
-function confirmClearAll() {
-  if (!confirm('Clear ALL data including inventory?')) return;
-  state = {
-    tasks: {}, sick_day: false, skip_inject: false, timer_end: null, last_day: getToday(),
-    inventory: {
-      tesa_ipa:    { vials: 3, dosesInCurrent: 10, expiry: '2026-06-15', maxDoses: 10 },
-      glow:        { vials: 2, dosesInCurrent: 20, expiry: '2026-06-20', maxDoses: 20 },
-      b12:         { vials: 1, dosesInCurrent: 50, expiry: '2026-07-01', maxDoses: 50 },
-      retatrutide: { vials: 1, dosesInCurrent: 8,  expiry: '2026-06-27', maxDoses: 8  }
-    }
-  };
-  clearInterval(timerInterval); timerInterval = null; TOTAL_SECS = 3600;
-  renderAll(); saveToSupabase();
-}
-
+// ── TABS ──────────────────────────────────────────────────────────────────────
 function showTab(name, el) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -668,15 +1275,52 @@ function showTab(name, el) {
   el.classList.add('active');
 }
 
-function renderAll() {
-  renderCountdown(); renderCycleDots(); renderTasks(); renderTimer(); renderInventory(); renderSickUI();
+// ── RESET ─────────────────────────────────────────────────────────────────────
+function resetDay() {
+  if (!confirm('Reset today\'s checklist?')) return;
+  state.tasks = {}; state.timer_end = null; TOTAL_SECS = 3600;
+  clearInterval(timerInterval); timerInterval = null;
+  renderTodayFeed(); renderTimer(); saveToSupabase();
 }
 
+function confirmClearAll() {
+  if (!confirm('Clear ALL data? This cannot be undone.')) return;
+  state.tasks = {}; state.timer_end = null; state.last_day = getToday(); state.walk_active_since = null; state.protein_end = null;
+  state.inventory = {
+    tesla:{ units:100, maxUnits:200, doseUnits:20, expiry:'2026-05-25', vials:2, maxDosesPerVial:10 },
+    glow: { units:128, maxUnits:192, doseUnits:12, expiry:'2026-05-28', vials:2, maxDosesPerVial:16 },
+    b12:  { units:1960,maxUnits:2000,doseUnits:40, expiry:'2026-07-01', vials:1, maxDosesPerVial:50 },
+    reta: { units:88,  maxUnits:124, doseUnits:62, expiry:'2026-05-30', vials:1, maxDosesPerVial:2  },
+    teso: { pills: null, dosePills: 1 },
+    tyro: { pills: null, dosePills: 1 }
+  };
+  TOTAL_SECS = 3600; clearInterval(timerInterval); timerInterval = null;
+  renderAll(); saveToSupabase();
+}
+
+// ── RENDER ALL ────────────────────────────────────────────────────────────────
+function renderAll() {
+  renderCountdown();
+  renderTodayFeed();
+  renderTimer();
+  renderInventory();
+  renderPills();
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
 renderAll();
 loadFromSupabase();
 setInterval(renderCountdown, 60000);
-if (state.timer_end && Date.now() < state.timer_end) {
-  timerInterval = setInterval(renderTimer, 1000);
+
+// Resume walk timer if mid-walk
+if (state.walk_active_since) {
+  walkTimerInterval = setInterval(tickWalkTimer, 1000);
+}
+
+// Resume protein timer if still counting
+if (state.protein_end && Date.now() < state.protein_end) {
+  proteinInterval = setInterval(() => tickProtein(state.protein_end), 1000);
+  tickProtein(state.protein_end);
 }
 </script>
 </body>
